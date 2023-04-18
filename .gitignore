@@ -1,3 +1,10 @@
+# Project-specific
+data/images/
+data/scenegraphs/
+data/data_train.json
+data/data_test.json
+data/data_validation.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
