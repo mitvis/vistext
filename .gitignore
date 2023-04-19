@@ -1,9 +1,15 @@
 # Project-specific
-data/images/
-data/scenegraphs/
+data/images/*
+data/scenegraphs/*
+data/intermediate/*
+data/L1gen/*
+
 data/data_train.json
 data/data_test.json
 data/data_validation.json
+data/L2L3_captions.json
+
+unittests.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
