@@ -8,7 +8,7 @@ function usage {
   echo "  -b batch_size       Batch size for training, validation, and testing."
   echo "                      Default batch_size = 4."
   echo "  -e num_epochs       Number of epochs to train for."
-  echo "                      Default num_epochs = 100."
+  echo "                      Default num_epochs = 50."
   echo "  -g num_gpus         Number of gpus to parallelize across."
   echo "                      Default num_gpus = 1"
   echo "  -i input_type       Chart text representation."
@@ -24,7 +24,7 @@ function usage {
 
 # Default parameter values.
 batch_size=4            # Train, val, and test batch size.
-num_epochs=100          # Number of epochs to train for.
+num_epochs=50           # Number of epochs to train for.
 num_gpus=1              # Number of GPUs to parallelize across.
 seed=$RANDOM            # Set seed to sepcific number for reproducible results.
 prefix_tuning=false     # true for semantic prefix tuning; false for full captions.
