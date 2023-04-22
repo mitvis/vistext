@@ -218,19 +218,20 @@ class Trainer(TrainerBase):
             if self.verbose:
                 log_str = f"\nBest Epoch {best_epoch}: Best Val Loss {best_val_loss:0.4f}\n"
                 print(log_str)
-                    
             
             # Save model for this epoch.
-            self.save(f"epoch_{epoch}")
+            if self.verbose:
+                self.save(f"epoch_{epoch:02}")
             
             if self.args.distributed:
                 dist.barrier()
             
 
         # Rename the best model.
-        best_epoch_path = os.path.join(self.args.output, f"epoch_{best_epoch}")
-        self.load(best_epoch_path)
-        self.save("BEST")
+        if self.verbose:
+            best_epoch_path = os.path.join(self.args.output, f"epoch_{best_epoch:02}")
+            self.load(best_epoch_path)
+            self.save("BEST")
 
         if self.args.distributed:
             dist.barrier()
