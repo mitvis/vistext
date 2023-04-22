@@ -65,8 +65,10 @@ def parse_args(parse=True, **optional_kwargs):
     # Data
     parser.add_argument('--data_directory', type=str, default='data/',
                         help='Path to data files.')
-    parser.add_argument('--test_only', action='store_true', 
-                        help='Do not train the model.')
+    parser.add_argument('--train', action='store_true',
+                        help='Train the model.')
+    parser.add_argument('--predict', action='store_true',
+                        help='Output val and test predictions.')
 
     # Checkpoint
     parser.add_argument('--output', type=str, default='models/', 
@@ -138,8 +140,6 @@ def parse_args(parse=True, **optional_kwargs):
                         help='Number of beams for beam search.')
     parser.add_argument('--gen_max_length', type=int, default=512, 
                         help='Maximum number of tokens to generate.')
-    parser.add_argument('--predict', action='store_true',
-                        help='Output val and test predictions.')
 
     # Data
     parser.add_argument('--do_lower_case', action='store_true', 

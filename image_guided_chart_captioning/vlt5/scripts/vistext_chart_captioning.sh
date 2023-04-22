@@ -91,6 +91,7 @@ python -m torch.distributed.launch \
     src/chart_caption.py \
     --distributed \
     --multiGPU \
+    --train \
     --predict \
     --seed  $seed \
     --output $experiment_directory \

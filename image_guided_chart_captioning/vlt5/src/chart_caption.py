@@ -392,7 +392,7 @@ def main_worker(gpu, args):
         )
     print('Test loader length:', len(test_loader))
     
-    if args.test_only is False:
+    if args.train:
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=True) 
         trainer.train()
     
@@ -401,7 +401,6 @@ def main_worker(gpu, args):
         args.load = model_file
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=False)
         
-        # TODO: reformat predictions based on what the evaluation script expects
         val_predictions = trainer.predict(val_loader)
         val_predictions_filename = os.path.join(args.output, 'val_predictions.txt')
         _write_predictions(val_predictions_filename, val_predictions, val_loader.dataset)
