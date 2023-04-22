@@ -276,7 +276,7 @@ class Trainer(TrainerBase):
         if self.verbose:
             val_pbar.close()  
             
-        val_results['loss'] /= step_i
+        val_results['loss'] /= (step_i + 1)
         return val_results
         
         
