@@ -208,8 +208,19 @@ class Trainer(TrainerBase):
                 
             # Compute validation loss.
             val_results = self.validate(self.val_loader)
-            if best_val_loss is None or val_results['loss'] < best_val_loss:
-                best_val_loss = val_results['loss']
+            val_loss = val_results['loss']
+
+            if self.args.distributed: # Average across GPUs.
+                dist.barrier()
+                dist_val_results = dist_utils.all_gather(val_results)
+                val_loss = 0
+                for dist_val_result in dist_val_results:
+                    val_loss += dist_val_result['loss'].detach().cpu().numpy()
+                val_loss /= len(dist_val_results)
+                dist.barrier()
+
+            if best_val_loss is None or val_loss < best_val_loss:
+                best_val_loss = val_loss
                 best_epoch = epoch
                 
             if self.args.distributed:
