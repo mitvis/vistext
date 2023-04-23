@@ -227,8 +227,8 @@ class Trainer(TrainerBase):
                 dist.barrier()
                 
             if self.verbose:
-                log_str = f"\nBest Epoch {best_epoch}: Best Val Loss {best_val_loss:0.4f}\n"
-                print(log_str)
+                print(f'\n Epoch {epoch} Val Loss {val_loss:0.4f}')
+                print(f'Best Epoch {best_epoch} Best Val Loss {best_val_loss:0.4f}\n')
             
             # Save model for this epoch.
             if self.verbose:
