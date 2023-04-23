@@ -294,11 +294,11 @@ class Trainer(TrainerBase):
         
     def predict(self, loader):
         """ Predict chart captions for every chart in the loader.
-        
+
         Args:
         loader (DataLoader): the DataLoader for a ChartCaptionFineTune Dataset
           containing VisText charts.
-          
+
         Returns: a dictionary maping the data ids to the predicted captions.
         """
         self.model.eval()
@@ -343,13 +343,14 @@ class Trainer(TrainerBase):
         
         
 def _write_predictions(output_filename, prediction_results, dataset):
-    """ Helper function to reorder predictions to match input data order and 
-    write them to disk.
-    
-    Predictions from Trainer.predict may not be in the dataset order because of
-    distributed computation. But the evaluation piepline expects a newline
-    dilimted text file of predictions in dataset order.
-    
+    """ Writes predictions to a newline delimited txt file in dataset order.
+
+    The evaluation pipeline expects a newline delimited text file of the
+    generated chart captions in dataset order. The output of Trainer.predict is
+    a mapping of data id to generated caption to account for distributed
+    computing. This function maps the output for Trainer.predict to the format
+    expected by the evaluation pipeline.
+
     Args:
     output_filename (str): The name of the output file the predictions are 
       written to.
@@ -357,7 +358,7 @@ def _write_predictions(output_filename, prediction_results, dataset):
     dataset (ChartCaptionFineTuneDataset): the VisText dataset. The dataset must
       be for the same data split as the prediction_results, so the ids in the 
       dataset match the ids in prediction_results.
-      
+
     Returns: None. Writes a newline-delimited .txt file named output_filename to 
     disk containing the predictions in dataset order.
     """
@@ -368,7 +369,19 @@ def _write_predictions(output_filename, prediction_results, dataset):
 
 
 def main_worker(gpu, args):
-    """Main function for training and evaluating the VisText model."""
+    """Train the VisText model and generate predictions for the validation and
+    test data.
+
+    Args:
+        gpu (int): The GPU number computation is done on.
+        args (argparse Config): The training and evaluation parameters.
+
+    Returns: None. Write the arguments to disk. Trains the model, saving every
+    epoch's state dict and the state dict of the model with the lowest
+    validation loss to disk. Generates captions for the validation and test data
+    and writes them out as a txt file in dataset order. Everything is written to
+    the args.output directory.
+    """
     args.gpu = gpu
     args.rank = gpu
     print(f'Process Launching at GPU {gpu}')
