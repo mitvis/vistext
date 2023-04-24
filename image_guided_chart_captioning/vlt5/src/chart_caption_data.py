@@ -26,6 +26,7 @@ class ChartCaptionFineTuneDataset(Dataset):
                 'val', or 'test'.
         """
         self.args = args
+        self.split = split
         
         data_file = os.path.join(args.data_directory, f'data_{split}.json')
         with open(data_file, 'r') as f:

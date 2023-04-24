@@ -310,7 +310,8 @@ class Trainer(TrainerBase):
             results = {} # Maps data id to predicted chart caption.
             
             # Get caption predictions.
-            for i, batch in enumerate(tqdm(loader, ncols=120, desc="Prediction", disable=not self.verbose)):
+            desc=f'{loader.dataset.split.title()} Predictions'
+            for i, batch in enumerate(tqdm(loader, ncols=120, desc=desc, disable=not self.verbose)):
                 if self.args.distributed:
                     output = self.model.module.test_step(
                         batch,
@@ -426,17 +427,10 @@ def main_worker(gpu, args):
         args.load = model_file
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=False)
         
-        if args.verbose:
-            print('Generating chart captions for the validation set.')
         val_predictions = trainer.predict(val_loader)
         val_predictions_filename = os.path.join(args.output, 'val_predictions.txt')
         _write_predictions(val_predictions_filename, val_predictions, val_loader.dataset)
-        
-        if args.distributed:
-            dist.barrier()
 
-        if args.verbose:
-            print('Generating chart captions for the test set.')
         test_predictions = trainer.predict(test_loader)
         test_predictions_filename = os.path.join(args.output, 'test_predictions.txt')
         _write_predictions(test_predictions_filename, test_predictions, test_loader.dataset)
