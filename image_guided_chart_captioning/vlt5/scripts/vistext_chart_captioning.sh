@@ -12,7 +12,7 @@ function usage {
   echo "  -g num_gpus         Number of gpus to parallelize across."
   echo "                      Default num_gpus = 1"
   echo "  -i input_type       Chart text representation."
-  echo "                      Options: 'scenegraph', 'datatable', or 'none'" 
+  echo "                      Options: 'scenegraph', 'datatable', or 'imageonly'"
   echo "                      Default input_type: 'scenegraph'"
   echo "  -m model_backbone   Model architecture to finetune."
   echo "                      Options: 't5' or 'bart'"
@@ -28,7 +28,7 @@ num_epochs=50           # Number of epochs to train for.
 num_gpus=1              # Number of GPUs to parallelize across.
 seed=$RANDOM            # Set seed to sepcific number for reproducible results.
 prefix_tuning=false     # true for semantic prefix tuning; false for full captions.
-input_type="scenegraph" # Text chart representation ("scenegraph", "datatable", or "none").
+input_type="scenegraph" # Text chart representation ("scenegraph", "datatable", or "imageonly").
 model_backbone="t5"     # Model backbone to use ("t5" or "bart").
 
 # Update parameters based on arguments passed to the script.

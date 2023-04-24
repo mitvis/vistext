@@ -119,7 +119,7 @@ class ChartCaptionFineTuneDataset(Dataset):
                 prefix = 'translate chart to L2L3: '
         
         input_text = prefix
-        if self.args.input_type is not 'none':
+        if self.args.input_type != 'imageonly':
             input_text += data_sample[self.args.input_type]
         input_ids = self.tokenizer.encode(input_text,
                                           max_length=self.args.max_text_length, 

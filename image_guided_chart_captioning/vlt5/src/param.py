@@ -149,7 +149,7 @@ def parse_args(parse=True, **optional_kwargs):
     parser.add_argument('--prefix_tuning', default=True, type=str2bool, 
                         help='Perform semantic prefix tuning.')
     parser.add_argument('--input_type', type=str, default='scenegraph', 
-                        choices=['scenegraph', 'datatable', 'none'],
+                        choices=['scenegraph', 'datatable', 'imageonly'],
                         help='Textual representation of the chart to use.')
     
     # Parse the arguments.
