@@ -343,30 +343,25 @@ class Trainer(TrainerBase):
             return results
         
         
-def _write_predictions(output_filename, prediction_results, dataset):
-    """ Writes predictions to a newline delimited txt file in dataset order.
+    def predict_and_save(self, output_filename, loader):
+        """ Compute predictions for every item in loader and writes the
+        predictions to a newline delimited txt file in dataset order.
 
-    The evaluation pipeline expects a newline delimited text file of the
-    generated chart captions in dataset order. The output of Trainer.predict is
-    a mapping of data id to generated caption to account for distributed
-    computing. This function maps the output for Trainer.predict to the format
-    expected by the evaluation pipeline.
+        Args:
+        output_filename (str): The name of the output file the predictions are
+          written to.
+        loader (DataLoader): DataLoader for the predictions.
 
-    Args:
-    output_filename (str): The name of the output file the predictions are 
-      written to.
-    prediction_results (dict): A mapping from data id to predicted caption.
-    dataset (ChartCaptionFineTuneDataset): the VisText dataset. The dataset must
-      be for the same data split as the prediction_results, so the ids in the 
-      dataset match the ids in prediction_results.
-
-    Returns: None. Writes a newline-delimited .txt file named output_filename to 
-    disk containing the predictions in dataset order.
-    """
-    predictions = [prediction_results[datum['id']] for datum in dataset]
-    with open(output_filename, 'w') as f:
-        for prediction in predictions:
-            f.write(f'{prediction}\n')
+        Returns: None. Writes a newline-delimited .txt file named
+        output_filename to disk containing the predictions in dataset order.
+        """
+        prediction_results = self.predict(loader)
+        dataset = loader.dataset
+        if self.verbose: # Only write out to disk from one computation thread.
+            predictions = [prediction_results[datum['id']] for datum in dataset]
+            with open(output_filename, 'w') as f:
+                for prediction in predictions:
+                    f.write(f'{prediction}\n')
 
 
 def main_worker(gpu, args):
@@ -427,13 +422,11 @@ def main_worker(gpu, args):
         args.load = model_file
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=False)
         
-        val_predictions = trainer.predict(val_loader)
         val_predictions_filename = os.path.join(args.output, 'val_predictions.txt')
-        _write_predictions(val_predictions_filename, val_predictions, val_loader.dataset)
+        trainer.predict_and_save(val_predictions_filename, val_loader)
 
-        test_predictions = trainer.predict(test_loader)
         test_predictions_filename = os.path.join(args.output, 'test_predictions.txt')
-        _write_predictions(test_predictions_filename, test_predictions, test_loader.dataset)
+        trainer.predict_and_save(test_predictions_filename, test_loader)
 
 
 if __name__ == "__main__":
