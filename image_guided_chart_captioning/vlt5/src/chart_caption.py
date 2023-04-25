@@ -208,15 +208,15 @@ class Trainer(TrainerBase):
                 
             # Compute validation loss.
             val_results = self.validate(self.val_loader)
-            val_loss = val_results['loss']
+            val_loss = val_results['loss'].detach().cpu() # Detach to prevent memory errors.
 
             if self.args.distributed: # Average across GPUs.
                 dist.barrier()
-                dist_val_results = dist_utils.all_gather(val_results)
+                dist_val_losses = dist_utils.all_gather(val_loss)
                 val_loss = 0
-                for dist_val_result in dist_val_results:
-                    val_loss += dist_val_result['loss'].detach().cpu().numpy()
-                val_loss /= len(dist_val_results)
+                for dist_val_loss in dist_val_losses:
+                    val_loss += dist_val_loss
+                val_loss /= len(dist_val_losses)
                 dist.barrier()
 
             if best_val_loss is None or val_loss < best_val_loss:
@@ -227,7 +227,7 @@ class Trainer(TrainerBase):
                 dist.barrier()
                 
             if self.verbose:
-                print(f'\n Epoch {epoch} Val Loss {val_loss:0.4f}')
+                print(f'\nEpoch {epoch} Val Loss {val_loss:0.4f}')
                 print(f'Best Epoch {best_epoch} Best Val Loss {best_val_loss:0.4f}\n')
             
             # Save model for this epoch.
