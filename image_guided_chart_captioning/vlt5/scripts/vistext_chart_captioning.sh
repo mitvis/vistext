@@ -15,21 +15,21 @@ function usage {
   echo "                      Options: 'scenegraph', 'datatable', or 'imageonly'"
   echo "                      Default input_type: 'scenegraph'"
   echo "  -m model_backbone   Model architecture to finetune."
-  echo "                      Options: 't5' or 'bart'"
-  echo "                      Default model_backbone = 't5'"
+  echo "                      Options: 't5-base' or 'facebook/bart-base'"
+  echo "                      Default model_backbone = 't5-base'"
   echo "  -s seed             Seed number. Default seed = random integer."
   echo "  --prefix_tuning     Apply semantic prefix tuning"
   exit 1
 }
 
 # Default parameter values.
-batch_size=4            # Train, val, and test batch size.
-num_epochs=50           # Number of epochs to train for.
-num_gpus=1              # Number of GPUs to parallelize across.
-seed=$RANDOM            # Set seed to sepcific number for reproducible results.
-prefix_tuning=false     # true for semantic prefix tuning; false for full captions.
-input_type="scenegraph" # Text chart representation ("scenegraph", "datatable", or "imageonly").
-model_backbone="t5"     # Model backbone to use ("t5" or "bart").
+batch_size=4             # Train, val, and test batch size.
+num_epochs=50            # Number of epochs to train for.
+num_gpus=1               # Number of GPUs to parallelize across.
+seed=$RANDOM             # Set seed to sepcific number for reproducible results.
+prefix_tuning=false      # true for semantic prefix tuning; false for full captions.
+input_type="scenegraph"  # Text chart representation ("scenegraph", "datatable", or "imageonly").
+model_backbone="t5-base" # Model backbone to use ("t5-base" or "facebook/bart-base").
 
 # Update parameters based on arguments passed to the script.
 while [[ $1 != "" ]]; do
@@ -63,16 +63,6 @@ while [[ $1 != "" ]]; do
     esac
     shift
 done
-
-# Convert model backbone name to backbone name used by VLT5
-if [[ $model_backbone -eq "t5" ]]; then
-    vl_backbone_name="t5-base"
-elif [[ $model_backbone -eq "bart" ]]; then
-    vl_backbone_name="facebook/bart-base"
-else
-    echo "Invalid argument: model_backbone is ${model_backbone}."
-    usage
-fi
 
 # Create experiment directory based on modeling parameters.
 experiment_name="vistext_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
