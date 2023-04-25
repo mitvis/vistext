@@ -393,7 +393,6 @@ def main_worker(gpu, args):
         distributed=args.distributed, gpu=args.gpu,
         workers=args.num_workers,
     )
-    print('Train loader length:', len(train_loader))
 
     print(f'Building val loader at GPU {gpu}')
     val_loader = get_loader(
@@ -402,7 +401,6 @@ def main_worker(gpu, args):
         distributed=args.distributed, gpu=args.gpu,
         workers=4,
     )
-    print('Val loader length:', len(val_loader))
 
     print(f'Building test loader at GPU {gpu}')
     test_loader = get_loader(
@@ -411,7 +409,6 @@ def main_worker(gpu, args):
         distributed=args.distributed, gpu=args.gpu,
         workers=4,
         )
-    print('Test loader length:', len(test_loader))
     
     if args.train:
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=True) 
