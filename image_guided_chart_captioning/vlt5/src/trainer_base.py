@@ -60,8 +60,6 @@ class TrainerBase(object):
 
         config = config_class.from_pretrained(self.args.backbone)
         
-        # print('Config is: ', config_class, config)
-
         args = self.args
 
         config.feat_dim = args.feat_dim
@@ -80,18 +78,14 @@ class TrainerBase(object):
         config.losses = args.losses
 
         config.share_vis_lang_layer_norm = args.share_vis_lang_layer_norm
-        # config.classifier = args.classifier
 
         return config
 
 
     def create_model(self, model_class, config=None, **kwargs):
         print(f'Building Model at GPU {self.args.gpu}')
-
         model_name = self.args.backbone
-
-        model = model_class.from_pretrained(model_name, args=self.args, 
-                                            config=config, **kwargs)
+        model = model_class.from_pretrained(model_name, config=config, **kwargs)
         return model
 
     def create_tokenizer(self, **kwargs):

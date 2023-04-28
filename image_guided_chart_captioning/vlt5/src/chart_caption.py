@@ -17,7 +17,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from tqdm import tqdm
 
 from vlt5.src.chart_caption_data import get_loader
-from vlt5.src.chart_caption_model import VLT5ChartCaption
+from vlt5.src.chart_caption_model import VLBartChartCaption, VLT5ChartCaption
 import vlt5.src.dist_utils as dist_utils
 from vlt5.src.param import parse_args
 from vlt5.src.utils import LossMeter, set_global_logging_level
@@ -51,13 +51,29 @@ class Trainer(TrainerBase):
             train=train)
 
         model_kwargs = {}
-        model_class = VLT5ChartCaption
+        if 't5' in args.backbone:
+            model_class = VLT5ChartCaption
+        elif 'bart' in args.backbone:
+            model_class = VLBartChartCaption
 
         config = self.create_config()
 
-        self.tokenizer = self.create_tokenizer() 
+        self.tokenizer = self.create_tokenizer()
+        if 'bart' in self.args.tokenizer:
+            num_added_toks = 0
+            if config.use_vis_order_embedding:
+                additional_special_tokens = [f'<extra_id_{i}>' for i in range(100-1, -1, -1)] + \
+                        [f'<vis_extra_id_{i}>' for i in range(100-1, -1, -1)]
+                special_tokens_dict = {'additional_special_tokens': additional_special_tokens}
+                num_added_toks = self.tokenizer.add_special_tokens(special_tokens_dict)
+                config.default_obj_order_ids = self.tokenizer.convert_tokens_to_ids([f'<vis_extra_id_{i}>' for i in range(100)])
+
         self.model = self.create_model(model_class, config, **model_kwargs)
-        self.model.resize_token_embeddings(self.tokenizer.vocab_size)
+        if 't5' in self.args.tokenizer:
+            self.model.resize_token_embeddings(self.tokenizer.vocab_size)
+        elif 'bart' in self.args.tokenizer:
+            self.model.resize_token_embeddings(self.model.model.shared.num_embeddings + num_added_toks)
+
         self.model.tokenizer = self.tokenizer 
 
         # Load checkpoint or initialize model.
@@ -92,21 +108,21 @@ class Trainer(TrainerBase):
                                  )
         if self.verbose:
             print(f'Initializing the trainer took {time() - start:.1f}s')
-            
+
         # Save arguments to disk.
         argument_file = os.path.join(self.args.output, 'args.json')
         argument_dict = vars(args)
         with open(argument_file, 'w') as f:
             json.dump(argument_dict, f) 
 
-            
+
     def train(self):
         """Train the VisText model."""
         best_val_loss = None
         best_epoch = 0
         if self.verbose:
             loss_meter = LossMeter()
-                
+
         if self.args.distributed:
             dist.barrier()
 
@@ -136,7 +152,7 @@ class Trainer(TrainerBase):
                     else:
                         results = self.model.train_step(batch)
                 loss = results['loss']
-                
+
                 # Backwards pass.
                 if self.args.fp16 and _use_native_amp:
                     self.scaler.scale(loss).backward()
@@ -199,13 +215,13 @@ class Trainer(TrainerBase):
                     desc_str += f' | Loss {loss_meter.val:4f}'
                     pbar.set_description(desc_str)
                     pbar.update(1)
-                    
+
             if self.args.distributed:
                 dist.barrier()
-                
+
             if self.verbose:
                 pbar.close()
-                
+
             # Compute validation loss.
             val_results = self.validate(self.val_loader)
             val_loss = val_results['loss'].detach().cpu() # Detach to prevent memory errors.
@@ -217,26 +233,27 @@ class Trainer(TrainerBase):
                 for dist_val_loss in dist_val_losses:
                     val_loss += dist_val_loss
                 val_loss /= len(dist_val_losses)
+                # print(f'Setting Barrier gpu {args.gpu}')
                 dist.barrier()
 
             if best_val_loss is None or val_loss < best_val_loss:
                 best_val_loss = val_loss
                 best_epoch = epoch
-                
+
             if self.args.distributed:
                 dist.barrier()
-                
+
             if self.verbose:
                 print(f'\nEpoch {epoch} Val Loss {val_loss:0.4f}')
                 print(f'Best Epoch {best_epoch} Best Val Loss {best_val_loss:0.4f}\n')
-            
+
             # Save model for this epoch.
             if self.verbose:
                 self.save(f"epoch_{epoch:02}")
-            
+
             if self.args.distributed:
                 dist.barrier()
-            
+
 
         # Rename the best model.
         if self.verbose:
@@ -246,20 +263,19 @@ class Trainer(TrainerBase):
 
         if self.args.distributed:
             dist.barrier()
-            
-            
+
     def validate(self, loader):
         """Validate the VisText model."""
         self.model.eval()
         val_results = {'loss': 0}
-        
+
         if self.args.distributed:
             dist.barrier()
-            
+
         if self.verbose:
             val_loss_meter = LossMeter()
             val_pbar = tqdm(total=len(loader), ncols=120)
-        
+
         with torch.no_grad():
             for step_i, batch in enumerate(loader):
                 if self.args.fp16 and _use_native_amp:
@@ -275,23 +291,22 @@ class Trainer(TrainerBase):
                         batch_results = self.model.test_step(batch, predict=False)  
                         
                 val_results['loss'] += batch_results['loss']
-                
+
                 if self.verbose:
                     val_loss_meter.update(batch_results['loss'])
                     desc_str = f'Validation | Loss {val_loss_meter.val:4f}'
                     val_pbar.set_description(desc_str)
                     val_pbar.update(1)
-                    
+
         if self.args.distributed:
             dist.barrier()
-        
+
         if self.verbose:
             val_pbar.close()  
-            
+
         val_results['loss'] /= (step_i + 1)
         return val_results
-        
-        
+
     def predict(self, loader):
         """ Predict chart captions for every chart in the loader.
 
@@ -306,9 +321,9 @@ class Trainer(TrainerBase):
             gen_kwargs = {}
             gen_kwargs['num_beams'] = self.args.num_beams
             gen_kwargs['max_length'] = self.args.gen_max_length
-            
+
             results = {} # Maps data id to predicted chart caption.
-            
+
             # Get caption predictions.
             desc=f'{loader.dataset.split.title()} Predictions'
             for i, batch in enumerate(tqdm(loader, ncols=120, desc=desc, disable=not self.verbose)):
@@ -409,16 +424,16 @@ def main_worker(gpu, args):
         distributed=args.distributed, gpu=args.gpu,
         workers=4,
         )
-    
+
     if args.train:
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=True) 
         trainer.train()
-    
+
     if args.predict:
         model_file = os.path.join(args.output, 'BEST.pth')
         args.load = model_file
         trainer = Trainer(args, train_loader, val_loader, test_loader, train=False)
-        
+
         val_predictions_filename = os.path.join(args.output, 'val_predictions.txt')
         trainer.predict_and_save(val_predictions_filename, val_loader)
 

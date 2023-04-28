@@ -11,13 +11,14 @@ import sacrebleu
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.distributed import DistributedSampler
+from transformers import BartTokenizer
 
 from vlt5.src.tokenization import VLT5TokenizerFast
 
 
 class ChartCaptionFineTuneDataset(Dataset):
     """VisText Dataset for loading charts and captions."""
-    
+
     def __init__(self, args, split):
         """
         Args:
@@ -27,38 +28,47 @@ class ChartCaptionFineTuneDataset(Dataset):
         """
         self.args = args
         self.split = split
-        
+
         data_file = os.path.join(args.data_directory, f'data_{split}.json')
         with open(data_file, 'r') as f:
             self.data = json.load(f)
-                    
+
         self.features_file = os.path.join(args.data_directory, 'features', f'features_{split}_boxes36.h5')
-        
+
         self.args.tokenizer = self.args.backbone
-        self.tokenizer = VLT5TokenizerFast.from_pretrained(
-            self.args.backbone,
-            max_length=self.args.max_text_length,
-            do_lower_case=self.args.do_lower_case,
-        )
-        
+        if 't5' in self.args.tokenizer:
+            self.tokenizer = VLT5TokenizerFast.from_pretrained(
+                self.args.backbone,
+                max_length=self.args.max_text_length,
+                do_lower_case=self.args.do_lower_case,
+            )
+        elif 'bart' in self.args.tokenizer:
+            self.tokenizer = BartTokenizer.from_pretrained(
+                self.args.backbone,
+                max_length=self.args.max_text_length,
+                do_lower_case=self.args.do_lower_case)
+            additional_special_tokens = [f'<extra_id_{i}>' for i in range(100-1, -1, -1)] + \
+                    [f'<vis_extra_id_{i}>' for i in range(100-1, -1, -1)]
+            special_tokens_dict = {'additional_special_tokens': additional_special_tokens}
+            num_added_toks = self.tokenizer.add_special_tokens(special_tokens_dict)
+
     def __len__(self):
         """Returns the integer length of the dataset. Each data instance is a 
         chart and caption pair. If prefix tuning, the length of the dataset is 
         doubled because each chart is paired with its L1 and L2L3 captions 
         seperately."""
-        
         if self.args.prefix_tuning:
             return len(self.data) * 2
         return len(self.data)
-    
+
     def __getitem__(self, idx):
         """
         Gets a dataset item at index idx.
-        
+
         Args:
             idx (int): index in the Dataset. Must be greater than 0 and less
                 than the length of the Dataset.
-            
+
         Returns: A dictionary containing:
             id (string): data item ID
             img_id (string): image ID
@@ -74,20 +84,20 @@ class ChartCaptionFineTuneDataset(Dataset):
             target_length (torch.Tensor): number of caption tokens.
         """
         output = {}
-        
+
         # For prefix tuning, we split each data instance into two data 
         # instances: a (chart, L1 caption) and a (chart, L2 caption).
         if self.args.prefix_tuning:
             data_sample = self.data[math.floor(idx/2)]
         else:
             data_sample = self.data[idx]
-        
+
         output['id'] = data_sample['caption_id']
-        
+
         img_id = data_sample['img_id']
         output['img_id'] = img_id
         output['img_path'] = f"images/{data_sample['img_id']}.png"
-        
+
         # Visual Features: normalize them between 0 and 1 and add to the output.
         f = h5py.File(self.features_file, 'r')
         img_h = f[f'{img_id}/img_h'][()]
@@ -109,7 +119,7 @@ class ChartCaptionFineTuneDataset(Dataset):
         output['n_boxes'] = n_boxes
         output['boxes'] = boxes[:n_boxes]
         output['vis_feats'] = feats[:n_boxes]
-        
+
         # Text Input: process textual chart represenation and add prefix.
         prefix = 'translate chart to L1L2L3: '
         if self.args.prefix_tuning:
@@ -118,7 +128,7 @@ class ChartCaptionFineTuneDataset(Dataset):
                 prefix = 'translate chart to L1: '
             else:
                 prefix = 'translate chart to L2L3: '
-        
+
         input_text = prefix
         if self.args.input_type != 'imageonly':
             input_text += data_sample[self.args.input_type]
@@ -128,8 +138,7 @@ class ChartCaptionFineTuneDataset(Dataset):
         output['input_text'] = input_text
         output['input_ids'] = torch.LongTensor(input_ids)
         output['input_length'] = len(input_ids)      
-        
-        
+
         # Chart Caption: Load the target caption.
         target_text = f"{data_sample['caption_L1']} {data_sample['caption_L2L3']}"
         if self.args.prefix_tuning:
@@ -146,9 +155,8 @@ class ChartCaptionFineTuneDataset(Dataset):
         output['target_text'] = target_text
         output['target_ids'] = torch.LongTensor(target_ids)
         output['target_length'] = len(target_ids)
-                        
+
         return output
-    
 
     def collate_fn(self, batch):
         """Custom collation for batching (chart, caption) pairs."""
@@ -162,7 +170,6 @@ class ChartCaptionFineTuneDataset(Dataset):
         if self.args.use_vision:
             V_L = max(entry['n_boxes'] for entry in batch)
             feat_dim = batch[0]['vis_feats'].shape[-1]
-
             boxes = torch.zeros(B, V_L, 4, dtype=torch.float)
             vis_feats = torch.zeros(B, V_L, feat_dim, dtype=torch.float)
             vis_attention_mask = torch.zeros(B, V_L, dtype=torch.float)
@@ -188,7 +195,7 @@ class ChartCaptionFineTuneDataset(Dataset):
                 img_ids.append(entry['img_id'])
 
             target_ids[i, :entry['target_length']] = entry['target_ids']
-            
+
             input_text.append(entry['input_text'])
             targets.append(entry['target_text'])
 
@@ -215,7 +222,7 @@ class ChartCaptionFineTuneDataset(Dataset):
 def get_loader(args, split, mode, batch_size, workers, 
                distributed, gpu):
     """Create a VisText DataLoader.
-    
+
     Args:
         args (argparse Config): VisText arguments.
         split (string): The data split to load. Options are 'train', 'val', and 
@@ -227,10 +234,9 @@ def get_loader(args, split, mode, batch_size, workers,
         workers (int): The number of workers.
         distributed (boolean): If the DataLoader is distributed across GPUs.
         gpu (int): The GPU index.
-        
+
     Returns: a PyTorch DataLoader for the VisText dataset.
     """
-
     verbose = (gpu == 0) # Only be verbose for one GPU.
 
     dataset = ChartCaptionFineTuneDataset(

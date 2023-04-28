@@ -65,9 +65,9 @@ while [[ $1 != "" ]]; do
 done
 
 # Convert model backbone name to backbone name used by VLT5
-if [[ $model_backbone -eq "t5" ]]; then
+if [[ $model_backbone == "t5" ]]; then
     vl_backbone_name="t5-base"
-elif [[ $model_backbone -eq "bart" ]]; then
+elif [[ $model_backbone == "bart" ]]; then
     vl_backbone_name="facebook/bart-base"
 else
     echo "Invalid argument: model_backbone is ${model_backbone}."
@@ -78,7 +78,7 @@ fi
 experiment_name="vistext_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
 experiment_directory="$(pwd)/models/${experiment_name}"
 data_directory="$(cd ../../; pwd)/data/data" # data is in vistext/data/
-pretrained_model_path="$(pwd)/models/pretrain/VL${model_backbone^^}/Epoch30.pth"
+pretrained_model_path="$(pwd)/models/pretrain/VL${model_backbone^}/Epoch30.pth"
 if [[ ! -d $experiment_directory ]]; then
     echo "Making output directory at ${experiment_directory}"
     mkdir -p $experiment_directory
