@@ -337,35 +337,33 @@ class Trainer(TrainerBase):
                         batch,
                         predict=True,
                         **gen_kwargs)
-                    
+
                 batch_predictions = output['pred']
                 batch_ids = batch['ids']
                 batch_results = dict(zip(batch_ids, batch_predictions))
-                
+
                 results.update(batch_results)
 
             # Handle distributed GPUs.
             if self.args.distributed:
                 dist.barrier()
-
                 dist_results = dist_utils.all_gather(results)
                 results = {}
                 for dist_result in dist_results:
                     results.update(dist_result)
-                    
                 dist.barrier()
                 
             return results
-        
-        
+
     def predict_and_save(self, output_filename, loader):
-        """ Compute predictions for every item in loader and writes the
-        predictions to a newline delimited txt file in dataset order.
+        """ Compute predictions for every item in loader and write the
+        predictions in dataset order to a newline-delimited .txt file named
+        output_filename.
 
         Args:
         output_filename (str): The name of the output file the predictions are
           written to.
-        loader (DataLoader): DataLoader for the predictions.
+        loader (DataLoader): DataLoader for the data to be predicted.
 
         Returns: None. Writes a newline-delimited .txt file named
         output_filename to disk containing the predictions in dataset order.
@@ -375,8 +373,11 @@ class Trainer(TrainerBase):
         if self.verbose: # Only write out to disk from one computation thread.
             predictions = [prediction_results[datum['id']] for datum in dataset]
             with open(output_filename, 'w') as f:
-                for prediction in predictions:
-                    f.write(f'{prediction}\n')
+                for i, prediction in enumerate(predictions):
+                    line = f'{prediction}\n'
+                    if i == len(predictions) - 1:
+                        line = f'{prediction}'
+                    f.write(line)
 
 
 def main_worker(gpu, args):
