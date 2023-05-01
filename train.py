@@ -386,19 +386,23 @@ def main():
     else:
         data_files = {}
         if data_args.train_file is not None:
-            data_files["train"] = data_args.train_file
+            data_files["train"] = "../../"+data_args.train_file
             extension = data_args.train_file.split(".")[-1]
         if data_args.validation_file is not None:
-            data_files["validation"] = data_args.validation_file
+            data_files["validation"] = "../../"+data_args.validation_file
             extension = data_args.validation_file.split(".")[-1]
         if data_args.test_file is not None:
-            data_files["test"] = data_args.test_file
+            data_files["test"] = "../../"+data_args.test_file
             extension = data_args.test_file.split(".")[-1]
             
+        print(f"Data file paths: {data_files}")
+            
         if data_args.prefixtuning is True:            
-            raw_datasets = load_dataset("./data/loading_script_prefixtuning")
+            raw_datasets = load_dataset("./data/loading_script_prefixtuning",
+                                        data_files=data_files)
         else:
-            raw_datasets = load_dataset("./data/loading_script_noprefixtuning")
+            raw_datasets = load_dataset("./data/loading_script_noprefixtuning",
+                                        data_files=data_files)
 #             raw_datasets = load_dataset(
 #                 extension,
 #                 data_files=data_files,

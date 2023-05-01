@@ -30,12 +30,6 @@ from the corresponding reading passage, or the question might be unanswerable.
 ### TO UPDATE
 _HOMEPAGE = ""
 
-_FILEPATHS = {
-    "train": "../data_train.json",
-    "val": "../data_validation.json",
-    "test": "../data_test.json"
-}
-
 class VisTextConfig(datasets.BuilderConfig):
     """BuilderConfig for VisText."""
     
@@ -73,12 +67,12 @@ class VisText(datasets.GeneratorBasedBuilder):
         )
     
     def _split_generators(self, dl_manager: datasets.DownloadManager):
-        files = dl_manager.download_and_extract(_FILEPATHS)
+        files = dl_manager.download_and_extract(self.config.data_files)
 
         return [
-            datasets.SplitGenerator(name=datasets.Split.TRAIN, gen_kwargs={"filepath": files["train"]}),
-            datasets.SplitGenerator(name=datasets.Split.VALIDATION, gen_kwargs={"filepath": files["val"]}),
-            datasets.SplitGenerator(name=datasets.Split.TEST, gen_kwargs={"filepath": files["test"]}),
+            datasets.SplitGenerator(name=datasets.Split.TRAIN, gen_kwargs={"filepath": files["train"][0]}),
+            datasets.SplitGenerator(name=datasets.Split.VALIDATION, gen_kwargs={"filepath": files["validation"][0]}),
+            datasets.SplitGenerator(name=datasets.Split.TEST, gen_kwargs={"filepath": files["test"][0]}),
         ]
     
     def _generate_examples(self, filepath):
