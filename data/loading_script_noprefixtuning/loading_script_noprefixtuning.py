@@ -6,29 +6,24 @@ logger = datasets.logging.get_logger(__name__)
 
 ### TO UPDATE
 _CITATION = """\
-@article{2016arXiv160605250R,
-       author = {{Rajpurkar}, Pranav and {Zhang}, Jian and {Lopyrev},
-                 Konstantin and {Liang}, Percy},
-        title = "{SQuAD: 100,000+ Questions for Machine Comprehension of Text}",
-      journal = {arXiv e-prints},
-         year = 2016,
-          eid = {arXiv:1606.05250},
-        pages = {arXiv:1606.05250},
-archivePrefix = {arXiv},
-       eprint = {1606.05250},
+@InProceedings{huggingface:dataset,
+title = {A great new dataset},
+author={huggingface, Inc.
+},
+year={2020}
 }
 """
 
 ### TO UPDATE
 _DESCRIPTION = """\
-Stanford Question Answering Dataset (SQuAD) is a reading comprehension \
-dataset, consisting of questions posed by crowdworkers on a set of Wikipedia \
-articles, where the answer to every question is a segment of text, or span, \
-from the corresponding reading passage, or the question might be unanswerable.
+...
 """
 
 ### TO UPDATE
 _HOMEPAGE = ""
+
+### TO UPDATE
+_LICENSE = ""
 
 class VisTextConfig(datasets.BuilderConfig):
     """BuilderConfig for VisText."""
@@ -64,6 +59,7 @@ class VisText(datasets.GeneratorBasedBuilder):
             ),
             homepage=_HOMEPAGE,
             citation=_CITATION,
+            license=_LICENSE,
         )
     
     def _split_generators(self, dl_manager: datasets.DownloadManager):
