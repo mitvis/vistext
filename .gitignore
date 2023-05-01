@@ -9,7 +9,13 @@ data/data_test.json
 data/data_validation.json
 data/L2L3_captions.json
 
+models/*
+logs/*
+nltkdata/*
+
 unittests.md
+
+*.slurm
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
