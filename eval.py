@@ -43,8 +43,6 @@ from PIL import Image
 
 import gc
 
-natsort = lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)]
-
 def main():
     logging.basicConfig(level=logging.INFO)
 
@@ -78,9 +76,12 @@ def main():
                         help='Run Word Mover\'s Distance score evaluation (default=True)')
     
     args = parser.parse_args()
+    seed = args.seed
+    path_test = args.test_file
+    prefix = args.prefixtuning
+    split_eval = args.split_eval
     
     # Set seed value
-    seed = args.seed
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -98,7 +99,6 @@ def main():
         ter = evaluate.load("ter")
         
     # Load test set
-    path_test = args.test_file
     testdata = testdata_L1 = testdata_L2L3 = testmetadata = []
     
     with open(path_test) as f:
@@ -156,7 +156,6 @@ def main():
         predictions_cat = predictions
 
     scores = {}
-    split_eval = args.split_eval
     if split_eval:
         scores_pairwise = {}
 
@@ -255,7 +254,7 @@ def main():
     if args.metric_ter:
         timer_metric_start = timer()
         
-        logger.info("Scoring: TER...")
+        logger.info("Scoring: Translation Edit Rate...")
         ter_results = ter.compute(predictions=predictions_cat,
                                   references=testdata)
         scores["TER"] = ter_results["score"]
