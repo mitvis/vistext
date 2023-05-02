@@ -8,6 +8,9 @@ data/data_train.json
 data/data_test.json
 data/data_validation.json
 data/L2L3_captions.json
+data/data_train_altseed.json
+data/data_test_altseed.json
+data/data_validation_altseed.json
 
 models/*
 models
