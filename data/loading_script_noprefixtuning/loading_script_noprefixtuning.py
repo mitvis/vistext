@@ -78,8 +78,8 @@ class VisText(datasets.GeneratorBasedBuilder):
             processed = []
             for datum in vistext:
                 processed.append({"id": datum["caption_id"],
-                                  "scenegraph": datum["scenegraph"],
-                                  "datatable": datum["datatable"],
+                                  "scenegraph": datum["scenegraph"].strip(),
+                                  "datatable": datum["datatable"].strip(),
                                   "caption": datum['caption_L1'].strip() + " " + datum['caption_L2L3'].strip()})
                 
             for item in processed:

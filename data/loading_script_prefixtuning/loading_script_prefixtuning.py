@@ -78,13 +78,13 @@ class VisText(datasets.GeneratorBasedBuilder):
             processed = []
             for datum in vistext:
                 processed.append({"id": datum["caption_id"]+"_L1",
-                                  "scenegraph": datum["scenegraph"],
-                                  "datatable": datum["datatable"],
-                                  "caption": "translate Chart to L1: " + datum['caption_L1'].strip()})
+                                  "scenegraph": "translate Chart to L1: " + datum["scenegraph"].strip(),
+                                  "datatable": "translate Chart to L1: " + datum["datatable"].strip(),
+                                  "caption": datum['caption_L1'].strip()})
                 processed.append({"id": datum["caption_id"]+"_L2L3",
-                                  "scenegraph": datum["scenegraph"],
-                                  "datatable": datum["datatable"],
-                                  "caption": "translate Chart to L2L3: " + datum['caption_L2L3'].strip()})
+                                  "scenegraph": "translate Chart to L2L3: " + datum["scenegraph"].strip(),
+                                  "datatable": "translate Chart to L2L3: " + datum["datatable"].strip(),
+                                  "caption": datum['caption_L2L3'].strip()})
                 
             for item in processed:
                 yield item["id"], {
