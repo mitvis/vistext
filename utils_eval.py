@@ -22,17 +22,17 @@ def evalRG(predictions, datas):
         RG_all.append(evalRG_single(predictions[idx], datum))
     return RG_all
 
-def wmd_preprocess(sentence):
+def wmd_preprocess(sentence, stop_words):
     return [w for w in sentence.lower().split() if w not in stop_words]
 
-def evalWMD_single(prediction, data):
-    distance = w2v_model.wmdistance(wmd_preprocess(prediction), wmd_preprocess(data))
+def evalWMD_single(prediction, data, w2v_model, stop_words):
+    distance = w2v_model.wmdistance(wmd_preprocess(prediction, stop_words), wmd_preprocess(data, stop_words))
     return distance
 
-def evalWMD(predictions, datas):
+def evalWMD(predictions, datas, w2v_model, stop_words):
     WMD_all = []
     for idx, datum in enumerate(datas):
-        WMD_all.append(evalWMD_single(predictions[idx], datum))
+        WMD_all.append(evalWMD_single(predictions[idx], datum, w2v_model, stop_words))
     return WMD_all
 
 natsort = lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)]

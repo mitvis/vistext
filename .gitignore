@@ -17,8 +17,10 @@ models
 logs/*
 logs
 nltkdata/*
+metrics/*
+metrics
 
-unittests.md
+eval_all.ipynb
 
 *.slurm
 
