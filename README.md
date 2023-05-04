@@ -84,7 +84,8 @@ python run_metrics.py
 ```
 If the `--save_results` flag is not specified, metrics will only be printed to stdout.
 `--results_path` can be used to specify where to save the metrics to, otherwise it will be saved to the same folder as the predictions file under `results.txt`, overwriting any existing.
-To evaluate the L1 and L2L3 captions separately, use the `--split_eval` flag.
+To evaluate the L1 and L2L3 captions separately, use the `--split_eval` flag. This will not disable the combined L1L2L3 evaluation, and all three sets will be output (and saved, if specified).
+Metrics can be disabled from running using the `--no_X` flag, where `X` is the metric desired to be disabled. This can be helpful in the case of `--no_bleurt`, which disables BLEURT evaluation in the event that you do not available GPU resources.
 As in previous steps, specify the `--prefixtuning` flag for the prefix tuning case.
 
 ## Citing VisText
