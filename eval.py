@@ -147,16 +147,14 @@ def main():
     file.close()
     predictions = predictions.split("\n")
     logger.info(f"Predictions loaded: {len(predictions)}")
-    
-    if len(testdata) != len(predictions):
-        raise ValueError(f"Your predictions have {len(predictions)} lines while your test set has {len(testdata)} lines!")
         
     if prefix==True:
         if (len(predictions) % 2 != 0) or (len(testdata) % 2 != 0):
             raise ValueError(f"One of either your predictions or test set has an odd number of lines. \
                                Should be an even number using prefix tuning (one each of L1 and L2L3 per caption).")
             
-        L1predictions = L2L3predictions = []
+        L1predictions = []
+        L2L3predictions = []
         for idx, i in enumerate(predictions):
             if (idx % 2 == 0):
                 L1predictions.append(i)
@@ -170,6 +168,9 @@ def main():
             raise ValueError(f"Mismatch in prediction list lengths!")
     else:
         predictions_cat = predictions
+    
+    if len(testdata) != len(predictions_cat):
+        raise ValueError(f"Your predictions have {len(predictions_cat)} lines while your test set has {len(testdata)} lines!")
 
     scores = {}
     if split_eval:
@@ -279,11 +280,11 @@ def main():
             scores_pairwise["Translation Edit Rate"] = {}
             ter_results = ter.compute(predictions=L1predictions,
                                       references=testdata_L1)
-            scores_pairwise["Translation Edit Rate"]["L1"] = round(ter_results, 4)
+            scores_pairwise["Translation Edit Rate"]["L1"] = round(ter_results["score"], 4)
             
             ter_results = ter.compute(predictions=L2L3predictions,
                                       references=testdata_L2L3)
-            scores_pairwise["Translation Edit Rate"]["L2L3"] = round(ter_results, 4)
+            scores_pairwise["Translation Edit Rate"]["L2L3"] = round(ter_results["score"], 4)
         
         logger.info('Translation Edit Rate evaluation time:{0:.2f} minutes.'.format((timer()-timer_metric_start)/60))
         
@@ -312,70 +313,70 @@ def main():
             
         with open(savepath, 'w') as f:
             f.write(f"VisText Model Evaluation Results\n")
-            f.write(f"-----------------------------------\n")
+            f.write(f"---------------------------------------------\n")
             f.write(f"Model Results Path: {path_predictions}\n")
             f.write(f"Seed: {seed}\n\n")
             
             f.write(f"L1L2L3 Results\n")
-            f.write(f"-----------------------------------\n")
+            f.write(f"---------------------------------------------\n")
             for k,v in scores.items():
                 if isinstance(v, dict):
                     for k2,v2 in v.items():
-                        f.write(f"{k2}:\t\t\t{v2}\n")
+                        f.write(f"{k2}:\t{v2}\n")
                 else:
-                    f.write(f"{k}:\t\t\t{v}\n")
+                    f.write(f"{k}:\t{v}\n")
                     
             if split_eval:
                 f.write(f"\nL1 Results\n")
-                f.write(f"-----------------------------------\n")
+                f.write(f"---------------------------------------------\n")
                 for k,v in scores_pairwise.items():
                     if isinstance(v["L1"], dict):
                         for k2,v2 in v["L1"].items():
-                            f.write(f"{k2}:\t\t\t{v2}\n")
+                            f.write(f"{k2}:\t{v2}\n")
                     else:
                         printresult = v["L1"]
-                        f.write(f"{k}:\t\t\t{printresult}\n")
+                        f.write(f"{k}:\t{printresult}\n")
                         
                 f.write(f"\nL2L3 Results\n")
-                f.write(f"-----------------------------------\n")
+                f.write(f"---------------------------------------------\n")
                 for k,v in scores_pairwise.items():
                     if isinstance(v["L2L3"], dict):
                         for k2,v2 in v["L2L3"].items():
-                            f.write(f"{k2}:\t\t\t{v2}\n")
+                            f.write(f"{k2}:\t{v2}\n")
                     else:
                         printresult = v["L2L3"]
-                        f.write(f"{k}:\t\t\t{printresult}\n")
+                        f.write(f"{k}:\t{printresult}\n")
 
         
     sys.stdout.write(f"L1L2L3 Results\n")
-    sys.stdout.write(f"-----------------------------------\n")
+    sys.stdout.write(f"---------------------------------------------\n")
     for k,v in scores.items():
         if isinstance(v, dict):
             for k2,v2 in v.items():
-                sys.stdout.write(f"{k2}:\t\t\t{v2}\n")
+                sys.stdout.write(f"{k2}:\t{v2}\n")
         else:
-            sys.stdout.write(f"{k}:\t\t\t{v}\n")
+            sys.stdout.write(f"{k}:\t{v}\n")
             
     if split_eval:
         sys.stdout.write(f"\nL1 Results\n")
-        sys.stdout.write(f"-----------------------------------\n")
+        sys.stdout.write(f"---------------------------------------------\n")
         for k,v in scores_pairwise.items():
             if isinstance(v["L1"], dict):
                 for k2,v2 in v["L1"].items():
-                    sys.stdout.write(f"{k2}:\t\t\t{v2}\n")
+                    sys.stdout.write(f"{k2}:\t{v2}\n")
             else:
                 printresult = v["L1"]
-                sys.stdout.write(f"{k}:\t\t\t{printresult}\n")
+                sys.stdout.write(f"{k}:\t{printresult}\n")
 
         sys.stdout.write(f"\nL2L3 Results\n")
-        sys.stdout.write(f"-----------------------------------\n")
+        sys.stdout.write(f"---------------------------------------------\n")
         for k,v in scores_pairwise.items():
             if isinstance(v["L2L3"], dict):
                 for k2,v2 in v["L2L3"].items():
-                    sys.stdout.write(f"{k2}:\t\t\t{v2}\n")
+                    sys.stdout.write(f"{k2}:\t{v2}\n")
             else:
                 printresult = v["L2L3"]
-                sys.stdout.write(f"{k}:\t\t\t{printresult}\n")
+                sys.stdout.write(f"{k}:\t{printresult}\n")
                 
 if __name__ == '__main__':
     main()
