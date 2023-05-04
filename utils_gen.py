@@ -6,6 +6,12 @@ import re
 import random
 random.seed(2022)
 
+def cleanL2L3(caption):
+    caption = caption.strip()
+    if caption[-1] != ".":
+        caption = caption+"."
+    return caption
+
 def _wordsub(word_list):
     return [random.choice(word_list)]
 
