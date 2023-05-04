@@ -1,7 +1,7 @@
 """Evaluation for VisText models.
 
 Example usage:
-python eval.py \
+python run_metrics.py \
     --test_file data/data_test.json \
     --predictions_path models/BART-base_run2/generated_predictions.txt \
     --save_results \
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 import sys
 import argparse
 from utils_gen import *
-from utils_eval import *
+from utils_metrics import *
 import importlib
 import pandas as pd
 import numpy as np
@@ -75,7 +75,7 @@ def main():
     parser.add_argument('--no_wmd', default=False, action='store_true',
                         help='Remove Word Mover\'s Distance score evaluation (default=False)')
     
-    args = parser.parse_args()
+    args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
     path_test = args.test_file
     path_predictions = args.predictions_path
     save_results = args.save_results
