@@ -1,1 +1,0 @@
-# VisText Image-Guided Chart Captioning

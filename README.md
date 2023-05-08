@@ -4,7 +4,7 @@ This repository contains code for the paper:
 
 [VisText: A Benchmark for Semantically Rich Chart Captioning (ACL2023)](http://vis.csail.mit.edu/)
 
-Authors: [Ben J. Tang](https://benjtang.dev/), [Angie Boggust](http://angieboggust.com/), and [Arvind Satyanarayan](https://arvindsatya.com/)
+Authors: [Benny J. Tang](https://benjtang.dev/), [Angie Boggust](http://angieboggust.com/), and [Arvind Satyanarayan](https://arvindsatya.com/)
 
 ## Repo Contents
 
