@@ -72,7 +72,6 @@ while [[ $1 != "" ]]; do
 done
 
 # Create experiment directory based on modeling parameters.
-
 experiment_name="vistext_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
 experiment_directory="$(pwd)/models/${experiment_name}"
 if [[ ! -d $experiment_directory ]]; then
@@ -80,6 +79,7 @@ if [[ ! -d $experiment_directory ]]; then
     mkdir -p $experiment_directory
 fi
 
+# Train and evaluate the text-based model.
 if [[ $model_class == "textonly" ]]; then
     
     if [[ $input_type == "image_only" ]]; then
@@ -120,7 +120,8 @@ if [[ $model_class == "textonly" ]]; then
             --prefixtuning $prefix_tuning \
             --seed $seed
     fi
-    
+
+# Train and evaluate the image-guided model.
 elif [[ $model_class == "image_guided" ]]; then
     # Convert model backbone name to backbone name used by VLT5
     if [[ $model_backbone == "t5" ]]; then
