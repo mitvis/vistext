@@ -141,7 +141,7 @@ elif [[ $model_class = "image_guided" ]]; then
     PYTHONPATH=$PYTHONPATH:./src \
     python -m torch.distributed.launch \
         --nproc_per_node=$num_gpus \
-        code/image_guided/vlt5/chart_caption.py \
+        code/image_guided/chart_caption.py \
         --distributed \
         --multiGPU \
         --train \
