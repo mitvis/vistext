@@ -6,8 +6,6 @@ import logging
 import os
 from packaging import version
 from pathlib import Path
-import pickle
-from pprint import pformat
 from time import time
 import torch
 import torch.backends.cudnn as cudnn
