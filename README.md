@@ -23,6 +23,9 @@ Ensure that you have three folders, `data/images`, `data/scenegraphs`, and `data
 ### Step 2: Generate the VisText dataset from raw data
 Run the `dataset_generation.ipynb` notebook from start to finish, which will generate the three split dataset files `data/data_train.json`, `data/data_test.json`, and `data/data_validation.json`.
 
+### Step 3: Download pretained model checkpoints
+For image-guided models, we finetune the pretrained checkpoints from [VLT5](https://arxiv.org/abs/2102.02779). Download the `pretrain` folder from the [VLT5 Google Drive](https://drive.google.com/drive/folders/1wLdUVd0zYFsrF0LQvAUCy5TnTGDW48Fo?usp=share_link) and add it to the `models` folder.
+
 ### Step 3: Training and evaluating the VisText model
 Model training and evaluation can be run from `run_train_eval_predict.py`.
 As an example, our finetuned ByT5 scenegraph model was trained and evaluated with the following command:
