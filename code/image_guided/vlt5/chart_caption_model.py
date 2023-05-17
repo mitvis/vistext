@@ -3,8 +3,8 @@
 import torch
 import torch.nn
 
-from vlt5.src.modeling_bart import VLBart
-from vlt5.src.modeling_t5 import VLT5
+from modeling_bart import VLBart
+from modeling_t5 import VLT5
 
 
 class VLT5ChartCaption(VLT5):

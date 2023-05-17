@@ -10,7 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.distributed import DistributedSampler
 from transformers import BartTokenizer
 
-from vlt5.src.tokenization import VLT5TokenizerFast
+from tokenization import VLT5TokenizerFast
 
 
 class ChartCaptionFineTuneDataset(Dataset):
