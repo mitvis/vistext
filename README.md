@@ -1,21 +1,24 @@
 # VisText: A Benchmark for Semantically Rich Chart Captioning
+![Saliency card teaser.](teaser.png)
 
-This repository contains code for the paper:
+VisText is a benchmark dataset of over 12,000 charts and semantically rich captions! In the VisText dataset, each chart is represented as its rasterized image, scene graph specification, and underlying datatable. Each chart is paired with a synthetic L1 caption that describes the chart's elemental and ecoded properties and a human-generated L2/L3 caption that describes trends and statistics about the chart.
 
-[VisText: A Benchmark for Semantically Rich Chart Captioning (ACL2023)](http://vis.csail.mit.edu/)
+In the VisText paper, we train text-based models (i.e, models that use the scene graph and data table chart representations) as well as image-guided models that include the chart image. We also include semantic prefix-tuning, allowing our models to customize the level of semantic content in the chat. Our models output verbose chart captions that contain varying levels of semantic content.
 
-Authors: [Benny J. Tang](https://benjtang.dev/), [Angie Boggust](http://angieboggust.com/), and [Arvind Satyanarayan](https://arvindsatya.com/)
+This repository contains code for training and evaluating the VisText models. For more info, see: [VisText: A Benchmark for Semantically Rich Chart Captioning (ACL 2023)](http://vis.csail.mit.edu/pubs/vistext)
 
 ## Repo Contents
 
 `data/` - Data files
+
+`models/` - Pretrained models and checkpoints
 
 ## Using VisText
 ### Step 0: Clone the VisText repo
 
 ### Step 1: Download the raw data
 Download the raw data from the [dataset site](http://vis.csail.mit.edu/) and unzip to `data/`.
-Ensure that you have two folders, `data/images` and `data/scenegraphs`.
+Ensure that you have three folders, `data/images`, `data/scenegraphs`, and `data/features`.
 
 ### Step 2: Generate the VisText dataset from raw data
 Run the `dataset_generation.ipynb` notebook from start to finish, which will generate the three split dataset files `data/data_train.json`, `data/data_test.json`, and `data/data_validation.json`.
@@ -88,12 +91,13 @@ To evaluate the L1 and L2L3 captions separately, use the `--split_eval` flag. Th
 Metrics can be disabled from running using the `--no_X` flag, where `X` is the metric desired to be disabled. This can be helpful in the case of `--no_bleurt`, which disables BLEURT evaluation in the event that you do not available GPU resources.
 As in previous steps, specify the `--prefixtuning` flag for the prefix tuning case.
 
-## Citing VisText
-Please use the following bibtex entry to cite VisText:
-```bib
+## Citation
+For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](http://vis.csail.mit.edu/pubs/vistext/)
 ```
-
-## Other Acknowledgments
-- 
-- Training code from Transformers/Huggingface
-- Data from Chart-to-Text
+@inproceedings{saliencycards,
+  title={{VisText: A Benchmark for Semantically Rich Chart Captioning}},
+  author={Tang, Benny J. and Boggust, Angie and Satyanarayan, Arvind},
+  booktitle = {Annual Meeting of the Association for Computational Linguistics ({ACL})},
+  year={2023}
+}
+```
