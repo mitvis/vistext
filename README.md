@@ -7,92 +7,55 @@ In the VisText paper, we train text-based models (i.e, models that use the scene
 
 This repository contains code for training and evaluating the VisText models. For more info, see: [VisText: A Benchmark for Semantically Rich Chart Captioning (ACL 2023)](http://vis.csail.mit.edu/pubs/vistext)
 
-## Repo Contents
+## Repository Structure
+```
+run.sh # Main script used to train and evaluate models
 
-`data/` - Data files
+./code # Training and evaluation code
+    image_guided/ # image-guided models use chart images
+    text_only/ # text_only models use chart scene graphs and data tables
+    ...
+    
+./data # Stores the VisText dataset
+    feature_extraction/ # Code to extract chart visual features
+    ...
 
-`models/` - Pretrained models and checkpoints
+./data_generation # Converts the raw data to VisText format
+    dataset_generation.ipynb # Creates data files in ./data
+    ...
+    
+./models # Stores model outputs and pretrained model checkpoints
+```
 
-## Using VisText
-### Step 0: Clone the VisText repo
+## Set Up
+### Clone the VisText repo
 
-### Step 1: Download the raw data
+### Download the raw data
 Download the raw data from the [dataset site](http://vis.csail.mit.edu/) and unzip to `data/`.
 Ensure that you have three folders, `data/images`, `data/scenegraphs`, and `data/features`.
 
-### Step 2: Generate the VisText dataset from raw data
+### Generate the VisText dataset from raw data
 Run the `dataset_generation.ipynb` notebook from start to finish, which will generate the three split dataset files `data/data_train.json`, `data/data_test.json`, and `data/data_validation.json`.
 
-### Step 3: Download pretained model checkpoints
+### Download pretained model checkpoints [image-guided only]
 For image-guided models, we finetune the pretrained checkpoints from [VLT5](https://arxiv.org/abs/2102.02779). Download the `pretrain` folder from the [VLT5 Google Drive](https://drive.google.com/drive/folders/1wLdUVd0zYFsrF0LQvAUCy5TnTGDW48Fo?usp=share_link) and add it to the `models` folder.
 
-### Step 3: Training and evaluating the VisText model
-Model training and evaluation can be run from `run_train_eval_predict.py`.
-As an example, our finetuned ByT5 scenegraph model was trained and evaluated with the following command:
+## Usage
+Call `run.sh` with your desired parameters. Options are:
 ```
-python run_train_eval_predict.py     \
-    --model_name_or_path google/byt5-small   \
-    --do_train --do_eval     \
-    --train_file data/data_train.json \
-    --validation_file data/data_validation.json \
-    --test_file data/data_test.json     \
-    --output_dir models/ByT5-small-scenegraph-prefix   \
-    --max_target_length 512 \
-    --per_device_train_batch_size=3     \
-    --per_device_eval_batch_size=6 \
-    --text_column scenegraph    \
-    --summary_column caption \
-    --evaluation_strategy epoch \
-    --eval_accumulation_steps 1000 \
-    --save_strategy epoch \
-    --save_total_limit 2 \
-    --load_best_model_at_end=True \
-    --num_train_epochs 50 \
-    --prefixtuning=True \
-    --seed 10
+-c model_class    # Class of models to use ('text_only' or 'image_guided').
+-b batch_size     # Batch size for training, validation, and testing.
+-e num_epochs     # Number of epochs to train for.
+-g num_gpus       # Number of gpus to parallelize across.
+-i input_type     # Chart text representation ('scenegraph', 'datatable', or 'imageonly').
+-m model_backbone # Model architecture to finetune ('byt5', 't5', or 'bart').
+-s seed           # Seed number.
+--prefix_tuning   # Flag to use sematic prefix tuning.
 ```
-The `--text_caption` flag specifies which textual data source to use, either `scenegraph` or `datatable`. It is also important to correctly specify the `--prefixtuning` flag if the intent is to train a model with prefix tuning for L1 and L2L3 captions. Other arguments specified are documented in Hugging Face Transformers [TrainingArguments](https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments).
-
-### Step 4: Generating predictions
-Generating predictions can be run from the same `run_train_eval_predict.py` script.
-Our predictions were generated as follows:
+For example, to train and evaluate the `scene-graph` model with prefix tuning, run:
 ```
-python run_train_eval_predict.py     \
-    --model_name_or_path models/ByT5-small-scenegraph-prefix/checkpoint-XXXXX   \
-    --do_predict \
-    --train_file data/data_train.json \
-    --validation_file data/data_validation.json \
-    --test_file data/data_test.json     \
-    --output_dir models/ByT5-small-scenegraph-prefix   --overwrite_output_dir     \
-    --max_predict_samples 2540     \
-    --max_target_length 512 \
-    --per_device_eval_batch_size=10 \
-    --predict_with_generate=True \
-    --auto_find_batch_size=True \
-    --text_column scenegraph    \
-    --summary_column caption \
-    --prefixtuning=True \
-    --gradient_checkpointing=True
+bash run.sh -c text_only -b 4 -e 50 -g 4 -i scenegraph -m byt5 -s 42 --prefix_tuning
 ```
-We choose the checkpoint with the lowest evaluation loss for generating our predictions from, which we specify in `--model_name_or_path`. As before, correctly check that `--prefixtuning` is specified for the prefix tuning case.
-
-### Step 5: Evaluating metrics for predictions
-Once our predictions are generated, we can evaluate them on our metrics.
-Our metrics were evaluated as follows:
-```
-python run_metrics.py
-    --test_file data/data_test.json
-    --predictions_path models/ByT5-small-scenegraph-prefix/generated_predictions.txt
-    --save_results
-    --results_path metrics/ByT5-small-scenegraph-prefix_scores.txt
-    --split_eval
-    --prefixtuning
-```
-If the `--save_results` flag is not specified, metrics will only be printed to stdout.
-`--results_path` can be used to specify where to save the metrics to, otherwise it will be saved to the same folder as the predictions file under `results.txt`, overwriting any existing.
-To evaluate the L1 and L2L3 captions separately, use the `--split_eval` flag. This will not disable the combined L1L2L3 evaluation, and all three sets will be output (and saved, if specified).
-Metrics can be disabled from running using the `--no_X` flag, where `X` is the metric desired to be disabled. This can be helpful in the case of `--no_bleurt`, which disables BLEURT evaluation in the event that you do not available GPU resources.
-As in previous steps, specify the `--prefixtuning` flag for the prefix tuning case.
 
 ## Citation
 For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](http://vis.csail.mit.edu/pubs/vistext/)
