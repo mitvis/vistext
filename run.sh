@@ -93,6 +93,10 @@ if [[ $model_class = "text_only" ]]; then
             backbone_name="t5-small"
         elif [[ $model_backbone = "bart" ]]; then
             backbone_name="facebook/bart-base"
+            if [[ $prefix_tuning = true ]]; then
+                echo "Invalid argument: Prefix tuning cannot be used with BART."
+                usage
+            fi
         else
             echo "Invalid argument: model_backbone is ${model_backbone}."
             usage
