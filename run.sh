@@ -102,6 +102,7 @@ if [[ $model_class = "text_only" ]]; then
         python run_train_eval_predict.py     \
             --model_name_or_path $model_backbone   \
             --do_train --do_eval     \
+            --do_predict \
             --train_file data/data_train.json \
             --validation_file data/data_validation.json \
             --test_file data/data_test.json     \
@@ -109,6 +110,7 @@ if [[ $model_class = "text_only" ]]; then
             --max_target_length 512 \
             --per_device_train_batch_size $batch_size     \
             --per_device_eval_batch_size $batch_size \
+            --predict_with_generate=True \
             --text_column $input_type    \
             --summary_column caption \
             --evaluation_strategy epoch \
