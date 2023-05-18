@@ -67,7 +67,7 @@ Call `run_test.sh` with your parameters. Options are:
 ## Citation
 For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](http://vis.csail.mit.edu/pubs/vistext/)
 ```
-@inproceedings{saliencycards,
+@inproceedings{vistext,
   title={{VisText: A Benchmark for Semantically Rich Chart Captioning}},
   author={Tang, Benny J. and Boggust, Angie and Satyanarayan, Arvind},
   booktitle = {Annual Meeting of the Association for Computational Linguistics ({ACL})},
