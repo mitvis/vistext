@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to run image-guided chart captioning experiments.
+# Script to run chart captioning experiments.
 
 function usage {
   echo "usage: $0 [-c model_class] [-b batch_size] [-e num_epochs] [-g num_gpus] [-i input_type]"

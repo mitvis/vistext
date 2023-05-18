@@ -11,7 +11,7 @@ This repository contains code for training and evaluating the VisText models. Fo
 ```
 run.sh # Main script used to train and evaluate models
 
-./code # Training and evaluation code
+./code # Dataset generation, training, and evaluation code
     image_guided/ # image-guided models use chart images
     text_only/ # text_only models use chart scene graphs and data tables
     ...
@@ -20,9 +20,7 @@ run.sh # Main script used to train and evaluate models
     feature_extraction/ # Code to extract chart visual features
     ...
 
-./data_generation # Converts the raw data to VisText format
-    dataset_generation.ipynb # Creates data files in ./data
-    ...
+./metrics # Default directory prediction metrics will be written to
     
 ./models # Stores model outputs and pretrained model checkpoints
 ```
@@ -35,12 +33,13 @@ Download the raw data from the [dataset site](http://vis.csail.mit.edu/) and unz
 Ensure that you have three folders, `data/images`, `data/scenegraphs`, and `data/features`.
 
 ### Generate the VisText dataset from raw data
-Run the `dataset_generation.ipynb` notebook from start to finish, which will generate the three split dataset files `data/data_train.json`, `data/data_test.json`, and `data/data_validation.json`.
+Run the `code/dataset_generation.ipynb` notebook from start to finish, which will generate the three split dataset files `data/data_train.json`, `data/data_test.json`, and `data/data_validation.json`.
 
 ### Download pretained model checkpoints [image-guided only]
 For image-guided models, we finetune the pretrained checkpoints from [VLT5](https://arxiv.org/abs/2102.02779). Download the `pretrain` folder from the [VLT5 Google Drive](https://drive.google.com/drive/folders/1wLdUVd0zYFsrF0LQvAUCy5TnTGDW48Fo?usp=share_link) and add it to the `models` folder.
 
 ## Usage
+### Model training, evaluation, and predictions
 Call `run.sh` with your desired parameters. Options are:
 ```
 -c model_class    # Class of models to use ('text_only' or 'image_guided').
@@ -55,6 +54,14 @@ Call `run.sh` with your desired parameters. Options are:
 For example, to train and evaluate the `scene-graph` model with prefix tuning, run:
 ```
 bash run.sh -c text_only -b 4 -e 50 -g 4 -i scenegraph -m byt5 -s 42 --prefix_tuning
+```
+### Evaluating on test set
+Call `run_test.sh` with your parameters. Options are:
+```
+-p predictions_path    # Path of predictions
+-f results_filename    # Filename to save results under in metrics/
+--split_eval           # Flag to use for evaluating L1 and L2/L3 captions separately; only works with prefix tuning models.
+--prefix_tuning        # Flag to use sematic prefix tuning.
 ```
 
 ## Citation
