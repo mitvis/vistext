@@ -28,25 +28,41 @@ while [[ $1 != "" ]]; do
         results_filename=$1
         ;;
     --split_eval)
+        shift
         split_eval=true
+        ;;
     --prefix_tuning)
         prefix_tuning=true
     esac
     shift
 done
 
-# Join paths
+if [[ $predictions_path = "" ]]; then
+    echo "Invalid predictions file path: {$predictions_path}"
+    usage
+fi
+
+# Join results path
 results_path="$(pwd)/metrics/$results_filename"
 
-# Train and evaluate the text-based model.
-if [[ $split_eval = true ]]; then
-    
-    if [[ $prefix_tuning = false ]]; then
+# Run test
+if [[ $prefix_tuning = false ]]; then
+    if [[ $split_eval = true ]]; then
         echo "Invalid argument: Split evaluation requires can only be used with prefix tuning."
         usage
     else
         PYTHONPATH=$PYTHONPATH:./src \
-        python run_metrics.py \
+        python code/run_metrics.py \
+            --test_file data/data_test.json \
+            --predictions_path $predictions_path \
+            --save_results \
+            --results_path $results_path \
+            --no_bleurt
+    fi
+else
+    if [[ $split_eval = true ]]; then
+        PYTHONPATH=$PYTHONPATH:./src \
+        python code/run_metrics.py \
             --test_file data/data_test.json \
             --predictions_path $predictions_path \
             --save_results \
@@ -54,19 +70,17 @@ if [[ $split_eval = true ]]; then
             --split_eval \
             --prefixtuning \
             --no_bleurt
+    else
+        PYTHONPATH=$PYTHONPATH:./src \
+        python code/run_metrics.py \
+            --test_file data/data_test.json \
+            --predictions_path $predictions_path \
+            --save_results \
+            --results_path $results_path \
+            --prefixtuning \
+            --no_bleurt
     fi
-else
-    PYTHONPATH=$PYTHONPATH:./src \
-    python run_metrics.py \
-        --test_file data/data_test.json \
-        --predictions_path $predictions_path \
-        --save_results \
-        --results_path $results_path \
-        --prefixtuning $prefix_tuning \
-        --no_bleurt
 fi
-
-# Run test
 
 
 # If the `--save_results` flag is not specified, metrics will only be printed to stdout.

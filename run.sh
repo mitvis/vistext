@@ -87,7 +87,7 @@ if [[ $model_class = "text_only" ]]; then
         usage
     else
     
-        if [[ $model_backbone = "t5" ]]; then
+        if [[ $model_backbone = "byt5" ]]; then
             backbone_name="google/byt5-small"
         elif [[ $model_backbone = "t5" ]]; then
             backbone_name="t5-small"
@@ -99,8 +99,8 @@ if [[ $model_class = "text_only" ]]; then
         fi
 
         PYTHONPATH=$PYTHONPATH:./src \
-        python run_train_eval_predict.py     \
-            --model_name_or_path $model_backbone   \
+        python code/text_only/run_train_eval_predict.py     \
+            --model_name_or_path $backbone_name   \
             --do_train --do_eval     \
             --do_predict \
             --train_file data/data_train.json \

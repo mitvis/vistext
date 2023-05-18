@@ -55,8 +55,8 @@ def main():
                         help='Save results or not (default=False)')
     parser.add_argument('--results_path', type=str, default=None,
                         help='Path to results file, if none, will save in the same directory to ./metrics/results.txt; if existing, will overwrite (default=None)')
-    parser.add_argument('--seed', type=int, default=2022,
-                        help='Seed for L1 caption generation (default=2022)')
+    # parser.add_argument('--seed', type=int, default=2022,
+    #                     help='Seed for L1 caption generation (default=2022)')
     parser.add_argument('--split_eval', default=False, action='store_true',
                         help='Whether to evaluate L1 and L2L3 captions in addition to the joint L1L2L3 captions (default=False)')
     parser.add_argument('--prefixtuning', default=False, action='store_true',
@@ -81,13 +81,13 @@ def main():
     path_predictions = args.predictions_path
     save_results = args.save_results
     path_results = args.results_path
-    seed = args.seed
+    # seed = args.seed
     split_eval = args.split_eval
     prefix = args.prefixtuning
     logger.info(f"args: {args}")
     
     # Set seed value
-    np.random.seed(seed)
+    # np.random.seed(seed)
 
     if (split_eval) and (prefix==False):
         raise ValueError(f"Prefix tuning has to be enabled to do evaluate L1 and L2L3 captions separately.")
@@ -313,8 +313,8 @@ def main():
         with open(savepath, 'w') as f:
             f.write(f"VisText Model Evaluation Results\n")
             f.write(f"---------------------------------------------\n")
-            f.write(f"Model Results Path: {path_predictions}\n")
-            f.write(f"Seed: {seed}\n\n")
+            f.write(f"Model Test Set Predictions Path: {path_predictions}\n")
+            # f.write(f"Seed: {seed}\n\n")
             
             f.write(f"L1L2L3 Results\n")
             f.write(f"---------------------------------------------\n")

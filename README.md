@@ -53,7 +53,7 @@ Call `run.sh` with your desired parameters. Options are:
 ```
 For example, to train and evaluate the `scene-graph` model with prefix tuning, run:
 ```
-bash run.sh -c text_only -b 4 -e 50 -g 4 -i scenegraph -m byt5 -s 42 --prefix_tuning
+bash run.sh -c text_only -b 4 -e 50 -g 4 -i scenegraph -m byt5 -s 10 --prefix_tuning
 ```
 ### Evaluating on test set
 Call `run_test.sh` with your parameters. Options are:
@@ -62,6 +62,11 @@ Call `run_test.sh` with your parameters. Options are:
 -f results_filename    # Filename to save results under in metrics/
 --split_eval           # Flag to use for evaluating L1 and L2/L3 captions separately; only works with prefix tuning models.
 --prefix_tuning        # Flag to use sematic prefix tuning.
+```
+
+For example, to run evaluation on the above trained model, run:
+```
+bash run_test.sh -p models/vistext_scenegraph_byt5_prefixtuningtrue_seed10 -f vistext_scenegraph_byt5_prefixtuningtrue_seed10.txt --split_eval --prefix_tuning
 ```
 
 ## Citation
