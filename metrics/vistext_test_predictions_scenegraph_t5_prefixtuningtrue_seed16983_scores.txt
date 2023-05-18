@@ -1,0 +1,35 @@
+VisText Model Evaluation Results
+---------------------------------------------
+Model Results Path: models/vistext_test_predictions_scenegraph_t5_prefixtuningtrue_seed16983.txt
+Seed: 2022
+
+L1L2L3 Results
+---------------------------------------------
+BLEU:	0.3244
+Perplexity:	15.8516
+Relation Generation:	1.8146
+rouge1:	0.5358
+rouge2:	0.38
+rougeL:	0.4478
+rougeLsum:	0.4477
+Word Mover's Distance:	0.6932
+
+L1 Results
+---------------------------------------------
+BLEU:	0.4264
+Perplexity:	56.8066
+rouge1:	0.7412
+rouge2:	0.6209
+rougeL:	0.6287
+rougeLsum:	0.6283
+Word Mover's Distance:	0.5829
+
+L2L3 Results
+---------------------------------------------
+BLEU:	0.0598
+Perplexity:	19.7423
+rouge1:	0.2609
+rouge2:	0.1003
+rougeL:	0.2262
+rougeLsum:	0.2261
+Word Mover's Distance:	0.9244

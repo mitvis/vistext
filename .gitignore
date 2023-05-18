@@ -12,14 +12,10 @@ data/data_train_altseed.json
 data/data_test_altseed.json
 data/data_validation_altseed.json
 
-models/*
-models
 logs/*
 logs
 nltkdata/*
 nltkgensimdata/*
-metrics/*
-metrics
 
 eval_all.ipynb
 
