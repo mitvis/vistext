@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Fine-tuning the library models for sequence to sequence.
+Adapted from https://github.com/huggingface/transformers/blob/main/examples/pytorch/summarization/run_summarization.py
 """
 # You can also adapt this script on your own sequence to sequence task. Pointers for this are left as comments.
 
