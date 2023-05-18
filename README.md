@@ -62,7 +62,6 @@ python run_train_eval_predict.py     \
     --max_target_length 512 \
     --per_device_eval_batch_size=10 \
     --predict_with_generate=True \
-    --auto_find_batch_size=True \
     --text_column scenegraph    \
     --summary_column caption \
     --prefixtuning=True \
