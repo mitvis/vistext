@@ -63,7 +63,7 @@ def parse_args(parse=True, **optional_kwargs):
     parser.add_argument('--seed', type=int, default=9595, help='Random seed.')
 
     # Data
-    parser.add_argument('--data_directory', type=str, default='data/',
+    parser.add_argument('--data_directory', type=str, default='data/data/',
                         help='Path to data files.')
     parser.add_argument('--train', action='store_true',
                         help='Train the model.')

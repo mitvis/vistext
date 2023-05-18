@@ -6,8 +6,6 @@ import logging
 import os
 from packaging import version
 from pathlib import Path
-import pickle
-from pprint import pformat
 from time import time
 import torch
 import torch.backends.cudnn as cudnn
@@ -16,12 +14,12 @@ import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from tqdm import tqdm
 
-from vlt5.src.chart_caption_data import get_loader
-from vlt5.src.chart_caption_model import VLBartChartCaption, VLT5ChartCaption
-import vlt5.src.dist_utils as dist_utils
-from vlt5.src.param import parse_args
-from vlt5.src.utils import LossMeter, set_global_logging_level
-from vlt5.src.trainer_base import TrainerBase
+from chart_caption_data import get_loader
+from chart_caption_model import VLBartChartCaption, VLT5ChartCaption
+import dist_utils as dist_utils
+from param import parse_args
+from utils import LossMeter, set_global_logging_level
+from trainer_base import TrainerBase
 
 set_global_logging_level(logging.ERROR, ["transformers"])
 proj_dir = Path(__file__).resolve().parent.parent

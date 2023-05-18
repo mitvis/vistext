@@ -39,7 +39,7 @@ while [[ $1 != "" ]]; do
     case $1 in
     -c | --model_class)
         shift
-        input_type=$1
+        model_class=$1
         ;;
     -b | --batch_size)
         shift
@@ -72,7 +72,6 @@ while [[ $1 != "" ]]; do
 done
 
 # Create experiment directory based on modeling parameters.
-
 experiment_name="vistext_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
 experiment_directory="$(pwd)/models/${experiment_name}"
 if [[ ! -d $experiment_directory ]]; then
@@ -80,18 +79,19 @@ if [[ ! -d $experiment_directory ]]; then
     mkdir -p $experiment_directory
 fi
 
-if [[ $model_class == "textonly" ]]; then
+# Train and evaluate the text-based model.
+if [[ $model_class = "text_only" ]]; then
     
-    if [[ $input_type == "image_only" ]]; then
+    if [[ $input_type = "image_only" ]]; then
         echo "Invalid argument: ${image_only} cannot be used with ${model_class}."
         usage
     else
     
-        if [[ $model_backbone == "t5" ]]; then
+        if [[ $model_backbone = "t5" ]]; then
             backbone_name="google/byt5-small"
-        elif [[ $model_backbone == "t5" ]]; then
+        elif [[ $model_backbone = "t5" ]]; then
             backbone_name="t5-small"
-        elif [[ $model_backbone == "bart" ]]; then
+        elif [[ $model_backbone = "bart" ]]; then
             backbone_name="facebook/bart-base"
         else
             echo "Invalid argument: model_backbone is ${model_backbone}."
@@ -101,7 +101,8 @@ if [[ $model_class == "textonly" ]]; then
         PYTHONPATH=$PYTHONPATH:./src \
         python run_train_eval_predict.py     \
             --model_name_or_path $model_backbone   \
-            --do_train --do_eval --do_predict     \
+            --do_train --do_eval     \
+            --do_predict \
             --train_file data/data_train.json \
             --validation_file data/data_validation.json \
             --test_file data/data_test.json     \
@@ -121,12 +122,14 @@ if [[ $model_class == "textonly" ]]; then
             --prefixtuning $prefix_tuning \
             --seed $seed
     fi
-    
-elif [[ $model_class == "image_guided" ]]; then
+
+
+# Train and evaluate the image-guided model.
+elif [[ $model_class = "image_guided" ]]; then
     # Convert model backbone name to backbone name used by VLT5
-    if [[ $model_backbone == "t5" ]]; then
-        vl_backbone_name="t5-small"
-    elif [[ $model_backbone == "bart" ]]; then
+    if [[ $model_backbone = "t5" ]]; then
+        vl_backbone_name="t5-base"
+    elif [[ $model_backbone = "bart" ]]; then
         vl_backbone_name="facebook/bart-base"
     else
         echo "Invalid argument: model_backbone is ${model_backbone}."
@@ -140,7 +143,7 @@ elif [[ $model_class == "image_guided" ]]; then
     PYTHONPATH=$PYTHONPATH:./src \
     python -m torch.distributed.launch \
         --nproc_per_node=$num_gpus \
-        src/chart_caption.py \
+        code/image_guided/chart_caption.py \
         --distributed \
         --multiGPU \
         --train \
@@ -149,12 +152,15 @@ elif [[ $model_class == "image_guided" ]]; then
         --output $experiment_directory \
         --data_directory $data_directory \
         --load $pretrained_model_path \
-        --backbone $backbone_name \
+        --backbone $vl_backbone_name \
         --batch_size $batch_size \
         --epochs $num_epochs \
         --input_type $input_type \
         --prefix_tuning $prefix_tuning \
+
+
 else
     echo "Invalid argument: model_class is ${model_class}."
     usage
+
 fi

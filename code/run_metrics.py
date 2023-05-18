@@ -266,6 +266,23 @@ def main():
             scores_pairwise["ROUGE"]["L2L3"] = {key:round(rouge_results[key], 4) for key in rouge_results}
         
         logger.info('ROUGE evaluation time:{0:.2f} minutes.'.format((timer()-timer_metric_start)/60))
+        
+    if args.no_wmd==False:
+        timer_metric_start = timer()
+        
+        logger.info("Scoring: Word Mover's Distance...")
+        wmd_result = evalWMD(predictions_cat, testdata, w2v_model, stop_words)
+        scores["Word Mover's Distance"] = round(np.mean(wmd_result), 4)
+        
+        if split_eval:
+            scores_pairwise["Word Mover's Distance"] = {}
+            wmd_result = evalWMD(L1predictions, testdata_L1, w2v_model, stop_words)
+            scores_pairwise["Word Mover's Distance"]["L1"] = round(np.mean(wmd_result), 4)
+            
+            wmd_result = evalWMD(L2L3predictions, testdata_L2L3, w2v_model, stop_words)
+            scores_pairwise["Word Mover's Distance"]["L2L3"] = round(np.mean(wmd_result), 4)
+        
+        logger.info('Word Mover\'s Distance evaluation time:{0:.2f} minutes.'.format((timer()-timer_metric_start)/60))
 
     if args.no_ter==False:
         timer_metric_start = timer()
@@ -286,23 +303,6 @@ def main():
             scores_pairwise["Translation Edit Rate"]["L2L3"] = round(ter_results["score"], 4)
         
         logger.info('Translation Edit Rate evaluation time:{0:.2f} minutes.'.format((timer()-timer_metric_start)/60))
-        
-    if args.no_wmd==False:
-        timer_metric_start = timer()
-        
-        logger.info("Scoring: Word Mover's Distance...")
-        wmd_result = evalWMD(predictions_cat, testdata, w2v_model, stop_words)
-        scores["Word Mover's Distance"] = round(np.mean(wmd_result), 4)
-        
-        if split_eval:
-            scores_pairwise["Word Mover's Distance"] = {}
-            wmd_result = evalWMD(L1predictions, testdata_L1, w2v_model, stop_words)
-            scores_pairwise["Word Mover's Distance"]["L1"] = round(np.mean(wmd_result), 4)
-            
-            wmd_result = evalWMD(L2L3predictions, testdata_L2L3, w2v_model, stop_words)
-            scores_pairwise["Word Mover's Distance"]["L2L3"] = round(np.mean(wmd_result), 4)
-        
-        logger.info('Word Mover\'s Distance evaluation time:{0:.2f} minutes.'.format((timer()-timer_metric_start)/60))
 
     if save_results:
         if path_results is not None:

@@ -15,7 +15,7 @@ from transformers.models.t5.modeling_t5 import (
     T5Stack, T5Block, T5LayerNorm, T5ForConditionalGeneration
 )
 from transformers.utils import logging
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 logger = logging.get_logger(__name__)

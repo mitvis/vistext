@@ -1,7 +1,6 @@
 # Bart modeling code.
 # Originally from https://github.com/j-min/VL-T5.
 
-import copy
 import random
 import torch
 import torch.nn as nn
