@@ -140,7 +140,7 @@ elif [[ $model_class = "image_guided" ]]; then
         usage
     fi
 
-    data_directory="$(pwd)/data/data" # data is in vistext/data/
+    data_directory="$(pwd)/data" # data is in vistext/data/
     pretrained_model_path="$(pwd)/models/pretrain/VL${model_backbone^}/Epoch30.pth"
 
     # Run VisText model.

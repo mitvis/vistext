@@ -411,7 +411,7 @@ def main_worker(gpu, args):
     print(f'Building val loader at GPU {gpu}')
     val_loader = get_loader(
         args,
-        split='val', mode='val', batch_size=args.batch_size,
+        split='validation', mode='val', batch_size=args.batch_size,
         distributed=args.distributed, gpu=args.gpu,
         workers=4,
     )

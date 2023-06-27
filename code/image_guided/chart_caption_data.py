@@ -21,7 +21,7 @@ class ChartCaptionFineTuneDataset(Dataset):
         Args:
             args (argparse Config): VisText arguments.
             split (string): Loads the given split. Valid options are 'train', 
-                'val', or 'test'.
+                'validation', or 'test'.
         """
         self.args = args
         self.split = split
@@ -222,7 +222,7 @@ def get_loader(args, split, mode, batch_size, workers,
 
     Args:
         args (argparse Config): VisText arguments.
-        split (string): The data split to load. Options are 'train', 'val', and 
+        split (string): The data split to load. Options are 'train', 'validation', and 
             'test'.
         mode (string): The mode to load the data in. Options are 'train' and 
             'val'. 'train' adds shuffling to the DataLoader while 'val' does 
