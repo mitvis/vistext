@@ -2,17 +2,17 @@
 # Script to download and unzip data files.
 
 function usage {
-  echo "usage: $0 [--images] [--scenegraphs] [--mm_features]"
+  echo "usage: $0 [--images] [--scenegraphs] [--image_guided]"
   echo "  --images          Download rasterized chart images."
   echo "  --scenegraphs     Download full scenegraphs."
-  echo "  --mm_features     Download multimodal features."
+  echo "  --image_guided    Download multimodal features and weights."
   exit 1
 }
 
 # Default parameter values.
 images=false        # true to download images; false otherwise.
 scenegraphs=false   # true to download scenegraphs; false otherwise.
-features=false      # true to download multimodal features; false otherwise.
+mm=false            # true to download multimodal features and weights; false otherwise.
 
 # Update parameters based on arguments passed to the script.
 while [[ $1 != "" ]]; do
@@ -23,30 +23,35 @@ while [[ $1 != "" ]]; do
     --scenegraphs)
         scenegraphs=true
         ;;
-    --mm_features)
-        features=true
+    --image_guided)
+        mm=true
     esac
     shift
 done
 
 # Download tabular data
 echo "Downloading tabular data zip"
-wget https://vis.csail.mit.edu/vis-text/tabular.zip -P ./data/
+wget https://vis.csail.mit.edu/vistext/tabular.zip -P ./data/
 
 # Download images
 if [[ $images = true ]]; then
     echo "Downloading rasterized chart images zip."
-    wget https://vis.csail.mit.edu/vis-text/images.zip -P ./data/
+    wget https://vis.csail.mit.edu/vistext/images.zip -P ./data/
 fi
 # Download scenegraphs
 if [[ $scenegraphs = true ]]; then
     echo "Downloading full scenegraphs zip."
-    wget https://vis.csail.mit.edu/vis-text/scenegraphs.zip -P ./data/
+    wget https://vis.csail.mit.edu/vistext/scenegraphs.zip -P ./data/
 fi
 # Download multimodal features
-if [[ $features = true ]]; then
-    echo "Downloading multimodal scenegraphs zip."
-    wget https://vis.csail.mit.edu/vis-text/visual_features.zip -P ./data/
+if [[ $mm = true ]]; then
+    echo "Downloading multimodal features and weights zips."
+    wget https://vis.csail.mit.edu/vistext/visual_features.zip -P ./data/
+    # mkdir -p ./models/pretrain/VLT5/
+    # wget --load-cookies ./tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=100qajGncE_vc4bfjVxxICwz3dwiAxbIZ' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=100qajGncE_vc4bfjVxxICwz3dwiAxbIZ" -O ./models/pretrain/VLT5/Epoch30.pth && rm -rf ./tmp/cookies.txt
+    # mkdir -p ./models/pretrain/VLBart/
+    # wget --load-cookies ./tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1fTKGCBfMe2eJ_rivPQu0YkNJTNdv_0aq' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1fTKGCBfMe2eJ_rivPQu0YkNJTNdv_0aq" -O ./models/pretrain/VLBart/Epoch30.pth && rm -rf ./tmp/cookies.txt
+    wget https://vis.csail.mit.edu/vistext/vl_weights.zip -P ./models/
 fi
 
 echo "Downloading complete. Unzipping archives."
@@ -62,6 +67,7 @@ if [[ $scenegraphs = true ]]; then
     unzip ./data/scenegraphs.zip -d ./data/
 fi
 # Unzip multimodal features
-if [[ $features = true ]]; then
+if [[ $mm = true ]]; then
     unzip ./data/visual_features.zip -d ./data/
+    unzip ./models/vl_weights.zip -d ./models/
 fi
