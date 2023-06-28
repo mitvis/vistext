@@ -26,7 +26,10 @@ run.sh # Main script used to train and evaluate models
 ```
 
 ## Set Up
-### Clone the VisText repo
+### Clone the VisText repo & set up environment
+Clone this repo locally using `git clone https://github.com/mitvis/vistext.git`.
+To set up the `conda` environment with all dependencies, run `conda env create -f environment.yml`.
+This will create a new `conda` environment called `vistext-py39`, which you can activate with `conda activate vistext-py39`.
 
 ### Download the raw data
 Call `download_data.sh` to download and unzip the raw data (and optional image-guided features and weights). By default, the tabular data files are downloaded (containing splits for the reduced scenegraphs, linearized data tables, and captions). Options are:
