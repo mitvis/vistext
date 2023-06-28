@@ -1,7 +1,10 @@
 name: vistext-py39
 channels:
+  - pytorch
+  - nvidia
   - conda-forge
 dependencies:
+  - python=3.9
   - datasets>=2.6.1
   - evaluate>=0.3.0
   - gensim=4.3.0
@@ -16,7 +19,7 @@ dependencies:
   - sentencepiece=>0.1.96
   - tokenizers=>0.11.4
   - torchvision=>0.13.1
-  - transformers=>4.23.1
+  - transformers<=4.24.0
   - pip
   - pip:
     - git+https://github.com/google-research/bleurt.git@cebe7e6f996b40910cfaa520a63db47807e3bf5c
