@@ -72,7 +72,7 @@ while [[ $1 != "" ]]; do
 done
 
 # Create experiment directory based on modeling parameters.
-experiment_name="vistext_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
+experiment_name="vistext_${model_class}_${input_type}_${model_backbone}_prefixtuning${prefix_tuning}_seed${seed}"
 experiment_directory="$(pwd)/models/${experiment_name}"
 if [[ ! -d $experiment_directory ]]; then
     echo "Making output directory at ${experiment_directory}"
