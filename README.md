@@ -1,5 +1,5 @@
 # VisText: A Benchmark for Semantically Rich Chart Captioning
-![Saliency card teaser.](teaser.png)
+![Teaser image](teaser.png)
 
 VisText is a benchmark dataset of over 12,000 charts and semantically rich captions! In the VisText dataset, each chart is represented as its rasterized image, scene graph specification, and underlying datatable. Each chart is paired with a synthetic L1 caption that describes the chart's elemental and ecoded properties and a human-generated L2/L3 caption that describes trends and statistics about the chart.
 
@@ -28,8 +28,8 @@ run.sh # Main script used to train and evaluate models
 ## Set Up
 ### Clone the VisText repo & set up environment
 Clone this repo locally using `git clone https://github.com/mitvis/vistext.git`.
-To set up the `conda` environment with all dependencies, run `conda env create -f environment.yml`.
-This will create a new `conda` environment called `vistext-py39`, which you can activate with `conda activate vistext-py39`.
+To set up the `conda` environment with all dependencies, run `conda env create -f environment.yml` (for evaluation and text-only training) and `conda env create -f environment-image_guided.yml` (for image-guided models).
+This will create the `conda` environments with the correct package versions, which you can activate with `conda activate vistext` and `conda activate vistext-image_guided` respectively.
 
 ### Download the raw data
 Call `download_data.sh` to download and unzip the raw data (and optional image-guided features and weights). By default, the tabular data files are downloaded (containing splits for the reduced scenegraphs, linearized data tables, and captions). Options are:
@@ -67,19 +67,21 @@ Call `run.sh` with your desired parameters. Options are:
 -i input_type            # Chart text representation ('scenegraph', 'datatable', or 'imageonly').
 -m model_backbone        # Model architecture to finetune ('byt5', 't5', or 'bart').
 -s seed                  # Seed number.
---prefix_tuning          # Flag to use sematic prefix tuning.
+--prefix_tuning          # Flag to use sematic prefix-tuning.
 ```
-For example, to train and evaluate the `scene-graph` model with prefix tuning, run:
+For example, to train and evaluate the `scene-graph` model with prefix-tuning, run:
 ```
 bash run.sh -c text_only -b 4 -e 50 -g 4 -i scenegraph -m byt5 -s 10 --prefix_tuning
 ```
+If you are training image guided models, be sure to use the correct `conda` environment (`vistext-image_guided`).
+
 ### Evaluating on test set
 Call `run_test.sh` with your parameters. Options are:
 ```
 -p predictions_path      # Path of predictions
 -f results_filename      # Filename to save results under in metrics/
---split_eval             # Flag to use for evaluating L1 and L2/L3 captions separately; only works with prefix tuning models.
---prefix_tuning          # Flag to use sematic prefix tuning.
+--split_eval             # Flag to use for evaluating L1 and L2/L3 captions separately; only works with prefix-tuning models.
+--prefix_tuning          # Flag to use sematic prefix-tuning.
 ```
 
 For example, to run evaluation on the above trained model, run:

@@ -20,7 +20,7 @@ function usage {
   echo "                      Options: 'byt5', 't5', or 'bart'"
   echo "                      Default model_backbone = 'byt5'"
   echo "  -s seed             Seed number. Default seed = random integer."
-  echo "  --prefix_tuning     Apply semantic prefix tuning"
+  echo "  --prefix_tuning     Apply semantic prefix-tuning"
   exit 1
 }
 

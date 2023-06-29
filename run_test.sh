@@ -7,7 +7,7 @@ function usage {
   echo "  -p predictions_path Path to test set predictions"
   echo "  -f results_filename Filename to save results under in metrics/"
   echo "  --split_eval        Also separately run evaluations for L1 and L2/L3 captions"
-  echo "  --prefix_tuning     Apply semantic prefix tuning"
+  echo "  --prefix_tuning     Apply semantic prefix-tuning"
   exit 1
 }
 
@@ -15,6 +15,7 @@ function usage {
 predictions_path=""            # Path to test set predictions.
 results_filename="results.txt" # Filename of results.
 split_eval=false               # True for separately evaluating L1 and L2/L3 captions; false otherwise.
+prefix_tuning=false            # True 
 
 # Update parameters based on arguments passed to the script.
 while [[ $1 != "" ]]; do
