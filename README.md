@@ -92,10 +92,11 @@ bash run_test.sh -p models/vistext_scenegraph_byt5_prefixtuningtrue_seed10/gener
 ## Citation
 For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](https://vis.csail.mit.edu/vistext/)
 ```
-@inproceedings{vistext,
-  title={{VisText: A Benchmark for Semantically Rich Chart Captioning}},
-  author={Tang, Benny J. and Boggust, Angie and Satyanarayan, Arvind},
-  booktitle = {Annual Meeting of the Association for Computational Linguistics ({ACL})},
-  year={2023}
+@inproceedings{2023-vistext,
+  title = {{VisText: A Benchmark for Semantically Rich Chart Captioning}},
+  author = {Benny J. Tang AND Angie Boggust AND Arvind Satyanarayan},
+  booktitle = {The Annual Meeting of the Association for Computational Linguistics (ACL)},
+  year = {2023},
+  url = {http://vis.csail.mit.edu/pubs/vistext}
 }
 ```
