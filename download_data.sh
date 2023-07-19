@@ -5,6 +5,7 @@ function usage {
   echo "usage: $0 [--images] [--scenegraphs] [--image_guided]"
   echo "  --images          Download rasterized chart images."
   echo "  --scenegraphs     Download full scenegraphs."
+  echo "  --vl_spec         Download Vega-Lite specs."
   echo "  --image_guided    Download multimodal features and weights."
   exit 1
 }
@@ -12,7 +13,9 @@ function usage {
 # Default parameter values.
 images=false        # true to download images; false otherwise.
 scenegraphs=false   # true to download scenegraphs; false otherwise.
+vl_spec=false       # true to download vega-lite specs; false otherwise.
 mm=false            # true to download multimodal features and weights; false otherwise.
+
 
 # Update parameters based on arguments passed to the script.
 while [[ $1 != "" ]]; do
@@ -22,6 +25,9 @@ while [[ $1 != "" ]]; do
         ;;
     --scenegraphs)
         scenegraphs=true
+        ;;
+    --vl_spec)
+        vl_spec=true
         ;;
     --image_guided)
         mm=true
@@ -42,6 +48,11 @@ fi
 if [[ $scenegraphs = true ]]; then
     echo "Downloading full scenegraphs zip."
     wget https://vis.csail.mit.edu/vistext/scenegraphs.zip -P ./data/
+fi
+# Download vl_specs
+if [[ $vl_spec = true ]]; then
+    echo "Downloading full vega-lite specs zip."
+    wget https://vis.csail.mit.edu/vistext/vl_spec.zip -P ./data/
 fi
 # Download multimodal features
 if [[ $mm = true ]]; then
@@ -65,6 +76,10 @@ fi
 # Unzip scenegraphs
 if [[ $scenegraphs = true ]]; then
     unzip ./data/scenegraphs.zip -d ./data/
+fi
+# Unzip vl_spec
+if [[ $vl_spec = true ]]; then
+    unzip ./data/vl_spec.zip -d ./data/
 fi
 # Unzip multimodal features
 if [[ $mm = true ]]; then

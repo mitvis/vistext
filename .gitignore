@@ -17,9 +17,15 @@ logs
 nltkdata/*
 nltkgensimdata/*
 
-eval_all.ipynb
+metrics/*.txt
+!models/
+models/*
+exporteval/
 
+*.ipynb
 *.slurm
+*.zip
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

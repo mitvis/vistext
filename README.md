@@ -89,6 +89,9 @@ For example, to run evaluation on the above trained model, run:
 bash run_test.sh -p models/vistext_scenegraph_byt5_prefixtuningtrue_seed10/generated_predictions.txt -f vistext_scenegraph_byt5_prefixtuningtrue_seed10.txt --split_eval --prefix_tuning
 ```
 
+## Mapping from Statista Dataset
+VisText uses the Statista data scraped by [Chart-to-Text: A Large-Scale Benchmark for Chart Summarization](https://github.com/vis-nlp/Chart-to-text). We re-map the original IDs using the mappings found in `data/statista_mappings.json`.
+
 ## Citation
 For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](https://vis.csail.mit.edu/vistext/)
 ```
