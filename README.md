@@ -36,6 +36,7 @@ Call `download_data.sh` to download and unzip the raw data (and optional image-g
 ```
 --images                 # Download rasterized image files
 --scenegraphs            # Download original/hierarchical scene graph files
+--vl_spec                # Download Vega-Lite specs
 --image_guided           # Download visual features and the weights for VLT5/VLBart necessary for fine-tuning
 ```
 To only download the splits for text-based captioning, run:
