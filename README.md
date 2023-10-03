@@ -93,6 +93,13 @@ bash run_test.sh -p models/vistext_scenegraph_byt5_prefixtuningtrue_seed10/gener
 ## Mapping from Statista Dataset
 VisText uses the Statista data scraped by [Chart-to-Text: A Large-Scale Benchmark for Chart Summarization](https://github.com/vis-nlp/Chart-to-text). We re-map the original IDs using the mappings found in `data/statista_mappings.json`.
 
+## Language Prompts
+The models we trained on VisText, including the [open-source pretrained VisText models](https://vis.csail.mit.edu/vistext/), use the prompt structure: `translate chart to {semantic level}:  `. For each training variation the prompt is:
+* Full caption generation: `translate chart to L1L2L3:  `
+* Prefix-tuning L1 generation: `translate chart to L1:  `
+* Prefix-tuning L2/L3 generation: `translate chart to L2L3:  `
+
+
 ## Citation
 For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](https://vis.csail.mit.edu/vistext/)
 ```
