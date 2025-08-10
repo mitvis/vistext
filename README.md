@@ -5,7 +5,7 @@ VisText is a benchmark dataset of over 12,000 charts and semantically rich capti
 
 In the VisText paper, we train text-based models (i.e, models that use the scene graph and data table chart representations) as well as image-guided models that include the chart image. We also include semantic prefix-tuning, allowing our models to customize the level of semantic content in the chat. Our models output verbose chart captions that contain varying levels of semantic content.
 
-This repository contains code for training and evaluating the VisText models. For more info, see: [VisText: A Benchmark for Semantically Rich Chart Captioning (ACL 2023)](https://vis.csail.mit.edu/vistext/)
+This repository contains code for training and evaluating the VisText models. For more info, see: [VisText: A Benchmark for Semantically Rich Chart Captioning (ACL 2023)](https://vis.csail.mit.edu/pubs/vistext/)
 
 ## Repository Structure
 ```
@@ -94,14 +94,14 @@ bash run_test.sh -p models/vistext_scenegraph_byt5_prefixtuningtrue_seed10/gener
 VisText uses the Statista data scraped by [Chart-to-Text: A Large-Scale Benchmark for Chart Summarization](https://github.com/vis-nlp/Chart-to-text). We re-map the original IDs using the mappings found in `data/statista_mappings.json`.
 
 ## Language Prompts
-The models we trained on VisText, including the [open-source pretrained VisText models](https://vis.csail.mit.edu/vistext/), use the prompt structure: `translate chart to {semantic level}:  `. For each training variation the prompt is:
+The models we trained on VisText, including the [open-source pretrained VisText models](https://vis.csail.mit.edu/pubs/vistext/), use the prompt structure: `translate chart to {semantic level}:  `. For each training variation the prompt is:
 * Full caption generation: `translate chart to L1L2L3:  `
 * Prefix-tuning L1 generation: `translate chart to L1:  `
 * Prefix-tuning L2/L3 generation: `translate chart to L2L3:  `
 
 
 ## Citation
-For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](https://vis.csail.mit.edu/vistext/)
+For more information about VisText, check out [VisText: A Benchmark for Semantically Rich Chart Captioning](https://vis.csail.mit.edu/pubs/vistext/)
 ```
 @inproceedings{2023-vistext,
   title = {{VisText: A Benchmark for Semantically Rich Chart Captioning}},
